@@ -21,6 +21,7 @@ export default function HomePage() {
   const [theme, setTheme] = useState(config.themes[0]?.id ?? "neon");
   const [error, setError] = useState<string | null>(null);
   const [creating, setCreating] = useState(false);
+  const [joinCode, setJoinCode] = useState("");
   const navigate = useNavigate();
 
   const selectedSize = config.boardSizes.find((b) => b.id === boardSize) ?? config.boardSizes[0];
@@ -36,6 +37,15 @@ export default function HomePage() {
     } finally {
       setCreating(false);
     }
+  };
+
+  const onJoinRoom = () => {
+    const code = joinCode.trim();
+    if (!code) {
+      setError("Enter invite code first");
+      return;
+    }
+    navigate(`/join/${code}`);
   };
 
   if (showSetup) {
@@ -112,6 +122,16 @@ export default function HomePage() {
                 <option key={t.id} value={t.id}>{t.name}</option>
               ))}
             </select>
+
+            <label className="setup-label" style={{ marginTop: 14, display: "block" }}>5. JOIN BY CODE</label>
+            <div className="join-by-code">
+              <input
+                placeholder="Paste room code (UUID)"
+                value={joinCode}
+                onChange={(e) => setJoinCode(e.target.value)}
+              />
+              <button className="ghost-btn" onClick={onJoinRoom}>JOIN ROOM</button>
+            </div>
           </div>
         </section>
 

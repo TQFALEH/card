@@ -153,7 +153,7 @@ export default function RoomPage() {
         await channelRef.current?.send({ type: "broadcast", event: "room_started", payload: {} });
         await refresh();
       })
-      .catch(() => undefined);
+      .catch((err: any) => addToast(err?.message ?? "Unable to start room"));
   }, [room?.status, players.map((p) => p.is_ready).join("|"), user?.id]);
 
   useEffect(() => {
@@ -165,7 +165,9 @@ export default function RoomPage() {
           setRoomState({ room_id: roomId, state_json: next.state_json, version: next.version, updated_at: new Date().toISOString() });
           await channelRef.current?.send({ type: "broadcast", event: "state_updated", payload: { version: next.version } });
         })
-        .catch(() => undefined);
+        .catch(async () => {
+          await refresh();
+        });
     }, ms + 20);
     return () => window.clearTimeout(timeout);
   }, [roomState?.version, roomState?.state_json.pending?.resolve_after]);
@@ -207,18 +209,41 @@ export default function RoomPage() {
 
   const onCardClick = async (index: number) => {
     if (!room || !roomState || !user) return;
-    if (roomState.state_json.current_player !== user.id) return;
-    const next: any = await flipCard(room.room_id, index, roomState.version);
-    setRoomState({ room_id: room.room_id, state_json: next.state_json, version: next.version, updated_at: new Date().toISOString() });
-    await channelRef.current?.send({ type: "broadcast", event: "state_updated", payload: { version: next.version } });
+    if (roomState.state_json.current_player !== user.id) {
+      addToast("Wait for your turn");
+      return;
+    }
+    try {
+      const next: any = await flipCard(room.room_id, index, roomState.version);
+      setRoomState({ room_id: room.room_id, state_json: next.state_json, version: next.version, updated_at: new Date().toISOString() });
+      await channelRef.current?.send({ type: "broadcast", event: "state_updated", payload: { version: next.version } });
+    } catch (err: any) {
+      addToast(err?.message ?? "Flip rejected");
+      await refresh();
+    }
   };
 
   const onRematchSameRoom = async () => {
     if (!room) return;
-    await rematchRoom(room.room_id);
-    await channelRef.current?.send({ type: "broadcast", event: "room_rematch", payload: {} });
-    addToast("Room reset to lobby");
-    await refresh();
+    try {
+      await rematchRoom(room.room_id);
+      await channelRef.current?.send({ type: "broadcast", event: "room_rematch", payload: {} });
+      addToast("Room reset to lobby");
+      await refresh();
+    } catch (err: any) {
+      addToast(err?.message ?? "Rematch failed");
+    }
+  };
+
+  const onManualStart = async () => {
+    if (!room) return;
+    try {
+      await tryStart(room.room_id);
+      await channelRef.current?.send({ type: "broadcast", event: "room_started", payload: {} });
+      await refresh();
+    } catch (err: any) {
+      addToast(err?.message ?? "Start failed");
+    }
   };
 
   if (!room || !roomId) return <div className="loading-screen">Loading room...</div>;
@@ -292,7 +317,11 @@ export default function RoomPage() {
 
             <footer className="setup-footer">
               <button className="initialize-btn" onClick={onToggleReady}>{myPlayer?.is_ready ? "UNREADY" : "READY"}</button>
-              <button className="reset-btn" onClick={() => navigate("/")}>EXIT</button>
+              {room.host_id === user?.id && players.length === 2 && players.every((p) => p.is_ready) ? (
+                <button className="reset-btn" onClick={onManualStart}>START</button>
+              ) : (
+                <button className="reset-btn" onClick={() => navigate("/")}>EXIT</button>
+              )}
             </footer>
           </section>
         )}

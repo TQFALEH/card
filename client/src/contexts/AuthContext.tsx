@@ -17,7 +17,17 @@ export function AuthProvider({ children }: PropsWithChildren) {
       setProfile(null);
       return;
     }
-    const { data } = await supabase.from("profiles").select("user_id, username, avatar_url").eq("user_id", user.id).single();
+    const { data } = await supabase.from("profiles").select("user_id, username, avatar_url").eq("user_id", user.id).maybeSingle();
+    if (!data) {
+      const fallback = {
+        user_id: user.id,
+        username: user.user_metadata?.username ?? user.email?.split("@")[0] ?? `player_${user.id.slice(0, 6)}`,
+        avatar_url: null
+      } as Profile;
+      await supabase.from("profiles").upsert(fallback);
+      setProfile(fallback);
+      return;
+    }
     setProfile((data as Profile | null) ?? null);
   };
 

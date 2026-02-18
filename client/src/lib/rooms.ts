@@ -31,11 +31,24 @@ export async function fetchRoom(roomId: string): Promise<Room | null> {
 export async function fetchPlayers(roomId: string): Promise<RoomPlayer[]> {
   const { data, error } = await supabase
     .from("room_players")
-    .select("room_id,user_id,is_ready,is_host,joined_at,profiles(user_id,username,avatar_url)")
+    .select("room_id,user_id,is_ready,is_host,joined_at")
     .eq("room_id", roomId)
     .order("joined_at");
   if (error) throw error;
-  return (data ?? []).map((row: any) => ({ ...row, profile: row.profiles })) as RoomPlayer[];
+
+  const players = (data ?? []) as RoomPlayer[];
+  const userIds = players.map((p) => p.user_id);
+  if (!userIds.length) {
+    return players;
+  }
+
+  const { data: profileRows } = await supabase
+    .from("profiles")
+    .select("user_id,username,avatar_url")
+    .in("user_id", userIds);
+
+  const profileMap = new Map((profileRows ?? []).map((p: any) => [p.user_id, p]));
+  return players.map((p) => ({ ...p, profile: profileMap.get(p.user_id) }));
 }
 
 export async function fetchState(roomId: string): Promise<RoomStateRow | null> {

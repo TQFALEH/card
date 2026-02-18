@@ -46,7 +46,8 @@ p {
 .app-root {
   position: relative;
   min-height: 100vh;
-  overflow: hidden;
+  overflow-x: hidden;
+  overflow-y: auto;
 }
 
 .app-shell {
@@ -1211,6 +1212,112 @@ p {
     grid-template-columns: 1fr;
   }
 
+  .setup-screen {
+    padding: 14px;
+    gap: 16px;
+    border-radius: 14px;
+  }
+
+  .setup-header {
+    align-items: center;
+    padding-bottom: 12px;
+  }
+
+  .setup-icon {
+    width: 40px;
+  }
+
+  .setup-title-wrap h2 {
+    font-size: 1.35rem;
+    letter-spacing: 0.05em;
+  }
+
+  .setup-title-wrap p {
+    font-size: 0.72rem;
+    letter-spacing: 0.05em;
+  }
+
+  .icon-square-btn {
+    width: 42px;
+    border-radius: 8px;
+  }
+
+  .setup-label {
+    font-size: 0.92rem;
+    letter-spacing: 0.14em;
+    margin-bottom: 10px;
+  }
+
+  .mission-card {
+    min-height: unset;
+    padding: 12px;
+    gap: 6px;
+  }
+
+  .mission-icon {
+    width: 42px;
+    border-radius: 8px;
+  }
+
+  .mission-card strong {
+    font-size: 1.22rem;
+  }
+
+  .mission-card p {
+    font-size: 0.92rem;
+  }
+
+  .mission-card small {
+    margin-top: 4px;
+    font-size: 0.7rem;
+    padding: 4px 8px;
+  }
+
+  .level-row {
+    padding: 10px;
+    gap: 9px;
+  }
+
+  .level-row strong {
+    font-size: 1.14rem;
+  }
+
+  .level-row p {
+    font-size: 0.8rem;
+  }
+
+  .board-preview-box {
+    min-height: 200px;
+    padding: 12px;
+  }
+
+  .board-preview-grid.grid-4-4 {
+    grid-template-columns: repeat(4, 20px);
+    gap: 5px;
+  }
+
+  .board-preview-grid.grid-6-6 {
+    grid-template-columns: repeat(6, 18px);
+    gap: 4px;
+  }
+
+  .board-preview-grid.grid-8-8 {
+    grid-template-columns: repeat(8, 14px);
+    gap: 3px;
+  }
+
+  .initialize-btn {
+    font-size: 1.02rem;
+    letter-spacing: 0.12em;
+    padding: 12px;
+  }
+
+  .reset-btn {
+    font-size: 0.95rem;
+    letter-spacing: 0.08em;
+    padding: 12px;
+  }
+
   .setup-footer {
     grid-template-columns: 1fr;
   }
@@ -1243,5 +1350,37 @@ p {
 
   .menu-actions {
     flex-direction: column;
+  }
+}
+
+@media (max-width: 420px) {
+  .app-shell {
+    padding: 8px;
+  }
+
+  .setup-title-wrap {
+    gap: 8px;
+  }
+
+  .setup-title-wrap h2 {
+    font-size: 1.14rem;
+  }
+
+  .setup-title-wrap p {
+    font-size: 0.65rem;
+  }
+
+  .bot-difficulty-row {
+    gap: 6px;
+  }
+
+  .bot-btn {
+    font-size: 0.72rem;
+    padding: 5px 9px;
+  }
+
+  .bot-difficulty-row span {
+    font-size: 0.68rem;
+    letter-spacing: 0.06em;
   }
 }

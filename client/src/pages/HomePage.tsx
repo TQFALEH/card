@@ -184,8 +184,8 @@ export default function HomePage() {
             PLAY NOW
           </button>
           <div className="home-secondary-actions">
-            <button className="secondary-neon-btn"><BarChart3 size={16} />LEADERBOARD</button>
-            <button className="secondary-neon-btn"><Cog size={16} />SETTINGS</button>
+            <button className="secondary-neon-btn" onClick={() => navigate("/history")}><BarChart3 size={16} />HISTORY</button>
+            <button className="secondary-neon-btn" onClick={() => navigate("/friends")}><Cog size={16} />FRIENDS</button>
           </div>
         </section>
 

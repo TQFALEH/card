@@ -18,6 +18,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import GameBoard from "../components/GameBoard";
 import ScreenShell from "../components/ScreenShell";
 import { useAuth } from "../contexts/AuthContext";
+import { usePresence } from "../contexts/PresenceContext";
 import { useSound } from "../contexts/SoundContext";
 import {
   fetchPlayers,
@@ -30,6 +31,7 @@ import {
   setReady,
   tryStart
 } from "../lib/rooms";
+import { finalizeMatch } from "../lib/social";
 import { supabase } from "../lib/supabase";
 import type { Room, RoomPlayer, RoomStateRow } from "../types";
 
@@ -65,7 +67,9 @@ export default function RoomPage() {
   const scores = roomState?.state_json.scores ?? {};
   const winner = roomState ? [...players].sort((a, b) => (scores[b.user_id] ?? 0) - (scores[a.user_id] ?? 0))[0] : null;
   const { play } = useSound();
+  const { announce } = usePresence();
   const prevStatusRef = useRef<Room["status"] | null>(null);
+  const finalizedRef = useRef<string | null>(null);
 
   const addToast = (text: string) => {
     const id = Date.now() + Math.random();
@@ -90,6 +94,7 @@ export default function RoomPage() {
 
   useEffect(() => {
     if (!user || !roomId) return;
+    void announce("in_match", roomId);
     let active = true;
     void (async () => {
       try {
@@ -114,6 +119,7 @@ export default function RoomPage() {
     })();
     return () => {
       active = false;
+      void announce("online", null);
     };
   }, [user?.id, roomId]);
 
@@ -235,6 +241,15 @@ export default function RoomPage() {
     }
     prevStatusRef.current = room.status;
   }, [room?.status]);
+
+  useEffect(() => {
+    if (!roomId || room?.status !== "ended") return;
+    if (finalizedRef.current === roomId) return;
+    finalizedRef.current = roomId;
+    void finalizeMatch(roomId).catch(() => {
+      finalizedRef.current = null;
+    });
+  }, [room?.status, roomId]);
 
   const onToggleReady = async () => {
     if (!room || !myPlayer) return;

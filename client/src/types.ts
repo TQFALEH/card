@@ -33,6 +33,48 @@ export interface Stats {
   wins: number;
   losses: number;
   win_rate: number;
+  streak_best?: number;
+  streak_current?: number;
+  avg_duration?: number;
+}
+
+export interface FriendRelation {
+  id: string;
+  requester_id: string;
+  addressee_id: string;
+  status: "pending" | "accepted" | "rejected" | "blocked";
+  created_at: string;
+  updated_at: string;
+}
+
+export interface Invitation {
+  id: string;
+  from_user_id: string;
+  to_user_id: string;
+  status: "pending" | "accepted" | "rejected" | "expired" | "cancelled";
+  room_id: string | null;
+  board_size: BoardSizeId;
+  theme: string;
+  seed: number | null;
+  expires_at: string;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface MatchRow {
+  match_id: string;
+  room_id: string;
+  players_json: Array<{ user_id: string; username: string }>;
+  winner_id: string | null;
+  board_size: string | null;
+  theme: string | null;
+  started_at: string;
+  ended_at: string;
+  duration_seconds: number | null;
+  scores_json: Record<string, number>;
+  moves_total: number | null;
+  accuracy_json: Record<string, number>;
+  disconnects_json: unknown[];
 }
 
 export interface Room {

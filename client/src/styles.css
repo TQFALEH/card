@@ -143,6 +143,7 @@ p {
   grid-template-columns: 190px minmax(280px, 1fr) 190px;
   align-items: center;
   gap: clamp(10px, 2.6vw, 28px);
+  padding-top: clamp(26px, 3.4vw, 48px);
 }
 
 .home-side-left,
@@ -1512,6 +1513,7 @@ p {
   .home-center {
     grid-template-columns: 1fr;
     justify-items: center;
+    padding-top: 10px;
   }
 
   .home-side-left,

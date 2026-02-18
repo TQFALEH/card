@@ -3,7 +3,6 @@ import {
   BarChart3,
   BadgeCheck,
   Cog,
-  Crosshair,
   Gem,
   Menu,
   Play,
@@ -274,44 +273,94 @@ export default function App() {
         )}
 
         {screen === "factory" && (
-          <ScreenShell screenKey="factory" className="factory-screen glass-panel">
-            <header className="factory-header">
-              <div className="setup-title-wrap">
-                <span className="setup-icon"><Crosshair size={19} /></span>
-                <div>
-                  <h2>FACTORY CORE</h2>
-                  <p>SYSTEM BOOT // PRE-MISSION CHECKS</p>
-                </div>
+          <ScreenShell screenKey="factory" className="victory-screen">
+            <header className="victory-topbar">
+              <div className="victory-brand">
+                <span className="victory-brand-icon"><Trophy size={15} /></span>
+                <strong>Memory Match</strong>
               </div>
-              <button className="icon-square-btn" onClick={() => setScreen("home")}>
-                <X size={20} />
-              </button>
+              <div className="victory-top-actions">
+                <button className="icon-square-btn"><Cog size={17} /></button>
+                <div className="rank-pill">
+                  <span>RANK</span>
+                  <strong>Grandmaster</strong>
+                </div>
+                <span className="rank-avatar"><UserRound size={14} /></span>
+              </div>
             </header>
 
-            <section className="factory-grid">
-              <article className="factory-card">
-                <h3>Memory Engine</h3>
-                <p>Card matrix generation, pair hashing, and anti-race turn locks are online.</p>
-                <span>STATUS: STABLE</span>
-              </article>
-              <article className="factory-card">
-                <h3>Animation Core</h3>
-                <p>GSAP timelines calibrated for 60 FPS on desktop and constrained mobile GPUs.</p>
-                <span>STATUS: OPTIMIZED</span>
-              </article>
-              <article className="factory-card">
-                <h3>AI Neural Bot</h3>
-                <p>Difficulty presets loaded with memory retention variance and weighted randomness.</p>
-                <span>STATUS: ARMED</span>
-              </article>
+            <section className="victory-hero">
+              <p>MISSION ACCOMPLISHED</p>
+              <h2>VICTORY</h2>
             </section>
 
-            <footer className="factory-actions">
-              <button className="ghost-btn" onClick={() => setScreen("home")}>Abort</button>
-              <button className="primary-btn" onClick={() => setScreen("mode")}>
-                Enter Configuration
-              </button>
-            </footer>
+            <section className="victory-main-grid">
+              <article className="winner-panel glass-panel">
+                <div className="winner-avatar-ring">
+                  <div className="winner-avatar-core">A</div>
+                  <span className="winner-badge">MVP</span>
+                </div>
+                <h3>Alex Phoenix</h3>
+                <p>GLOBAL LEADERBOARD #14</p>
+                <div className="xp-panel">
+                  <div className="xp-row">
+                    <span>XP EARNED</span>
+                    <strong>+2,450 XP</strong>
+                  </div>
+                  <div className="xp-bar"><span style={{ width: "86%" }} /></div>
+                  <small>LEVEL 42 · 450 XP TO LEVEL 43</small>
+                </div>
+              </article>
+
+              <div className="victory-right">
+                <div className="victory-stats-grid">
+                  <article className="victory-stat-card glass-panel">
+                    <p><Zap size={13} /> MOVES</p>
+                    <strong>18</strong>
+                    <small>BEST: 15</small>
+                  </article>
+                  <article className="victory-stat-card glass-panel">
+                    <p><Timer size={13} /> TIME</p>
+                    <strong>01:42</strong>
+                    <small>AVG: 01:55</small>
+                  </article>
+                  <article className="victory-stat-card glass-panel">
+                    <p><Target size={13} /> ACCURACY</p>
+                    <strong>92%</strong>
+                    <small>WORLD AVG: 78%</small>
+                  </article>
+                </div>
+
+                <article className="rewards-panel glass-panel">
+                  <h4>MATCH REWARDS</h4>
+                  <div className="reward-row">
+                    <span className="reward-icon"><BadgeCheck size={17} /></span>
+                    <div>
+                      <strong>Speed Demon Badge</strong>
+                      <p>Finish in under 02:00 minutes</p>
+                    </div>
+                    <BadgeCheck className="reward-check" size={22} />
+                  </div>
+                  <div className="reward-row">
+                    <span className="reward-icon"><Gem size={17} /></span>
+                    <div>
+                      <strong>50 Crystals</strong>
+                      <p>Reward for Perfect Accuracy streak</p>
+                    </div>
+                    <BadgeCheck className="reward-check" size={22} />
+                  </div>
+                </article>
+
+                <div className="victory-ctas">
+                  <button className="victory-play-btn" onClick={() => setScreen("mode")}>
+                    <RotateCcw size={17} /> PLAY AGAIN
+                  </button>
+                  <button className="victory-menu-btn" onClick={() => setScreen("home")}>
+                    <Menu size={17} /> BACK TO MENU
+                  </button>
+                </div>
+              </div>
+            </section>
           </ScreenShell>
         )}
 

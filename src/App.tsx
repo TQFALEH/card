@@ -2,18 +2,30 @@ import { gsap } from "gsap";
 import {
   BarChart3,
   BadgeCheck,
+  Bell,
+  CalendarDays,
+  ChevronRight,
   Cog,
+  CreditCard,
   Gem,
+  Globe,
+  LogOut,
+  MapPin,
   Menu,
+  MessageSquare,
   Play,
   Rocket,
   RotateCcw,
   Server,
+  Shield,
   Target,
   Timer,
   Trophy,
   User,
   UserRound,
+  Clock3,
+  CircleCheck,
+  CircleX,
   Users,
   Zap,
   UsersRound,
@@ -125,6 +137,19 @@ const COPY = {
       totalMoves: "TOTAL MOVES",
       settings: "Settings",
       restart: "RESTART GAME"
+    },
+    profile: {
+      title: "ArenaProfile",
+      editProfile: "Edit Profile",
+      security: "Security",
+      achievements: "Achievements",
+      recentMatches: "Recent Matches",
+      playtimeTrends: "Playtime Trends",
+      friendsOnline: "Friends Online",
+      findPlayers: "FIND MORE PLAYERS",
+      subscription: "Subscription & Billing",
+      languageRegion: "Language & Region",
+      logout: "Log Out"
     }
   },
   ar: {
@@ -199,6 +224,19 @@ const COPY = {
       totalMoves: "إجمالي الحركات",
       settings: "الإعدادات",
       restart: "إعادة بدء اللعبة"
+    },
+    profile: {
+      title: "ملف اللاعب",
+      editProfile: "تعديل الملف",
+      security: "الأمان",
+      achievements: "الإنجازات",
+      recentMatches: "أحدث المباريات",
+      playtimeTrends: "اتجاه وقت اللعب",
+      friendsOnline: "الأصدقاء المتصلون",
+      findPlayers: "ابحث عن لاعبين",
+      subscription: "الاشتراك والفوترة",
+      languageRegion: "اللغة والمنطقة",
+      logout: "تسجيل الخروج"
     }
   }
 } as const;
@@ -454,7 +492,7 @@ export default function App() {
                   <span>{t.victory.rank}</span>
                   <strong>{t.victory.grandmaster}</strong>
                 </div>
-                <span className="rank-avatar"><UserRound size={14} /></span>
+                <button className="rank-avatar" onClick={() => setScreen("profile")}><UserRound size={14} /></button>
               </div>
             </header>
 
@@ -529,6 +567,115 @@ export default function App() {
                   </button>
                 </div>
               </div>
+            </section>
+          </ScreenShell>
+        )}
+
+        {screen === "profile" && (
+          <ScreenShell screenKey="profile" className="profile-screen">
+            <header className="profile-topbar">
+              <div className="profile-brand">
+                <span className="victory-brand-icon"><Trophy size={15} /></span>
+                <strong>{t.profile.title}</strong>
+              </div>
+              <div className="profile-top-actions">
+                <button className="icon-square-btn"><Bell size={16} /></button>
+                <button className="icon-square-btn"><Cog size={16} /></button>
+                <button className="rank-avatar" onClick={() => setScreen("home")}><UserRound size={14} /></button>
+              </div>
+            </header>
+
+            <section className="profile-main-grid">
+              <div className="profile-left">
+                <section className="profile-hero glass-panel">
+                  <div className="profile-avatar-wrap">
+                    <div className="winner-avatar-ring">
+                      <div className="winner-avatar-core">A</div>
+                      <span className="winner-badge">GRANDMASTER</span>
+                    </div>
+                  </div>
+                  <div className="profile-hero-text">
+                    <h2>{isArabic ? "أليكس ميموري" : "Alex Memory"}</h2>
+                    <p>{isArabic ? "المستوى 42 · مخطط نخبة" : "Level 42 · Elite Tactician"}</p>
+                    <div className="profile-meta">
+                      <span><CalendarDays size={13} /> {isArabic ? "انضم أكتوبر 2023" : "Joined Oct 2023"}</span>
+                      <span><MapPin size={13} /> San Francisco, CA</span>
+                    </div>
+                    <div className="profile-actions">
+                      <button className="victory-play-btn"><User size={15} /> {t.profile.editProfile}</button>
+                      <button className="victory-menu-btn"><Shield size={15} /> {t.profile.security}</button>
+                    </div>
+                  </div>
+                </section>
+
+                <section className="profile-stats-grid">
+                  <article className="profile-stat glass-panel">
+                    <p>{isArabic ? "إجمالي الانتصارات" : "TOTAL WINS"}</p>
+                    <strong>128</strong>
+                    <small className="up">+12%</small>
+                  </article>
+                  <article className="profile-stat glass-panel">
+                    <p>{isArabic ? "الترتيب العالمي" : "GLOBAL RANK"}</p>
+                    <strong>#412</strong>
+                    <small className="up">↑5</small>
+                  </article>
+                  <article className="profile-stat glass-panel">
+                    <p>{isArabic ? "معدل الفوز" : "WIN RATE"}</p>
+                    <strong>78%</strong>
+                    <small className="down">-2%</small>
+                  </article>
+                  <article className="profile-stat glass-panel">
+                    <p>{isArabic ? "إجمالي الخبرة" : "TOTAL XP"}</p>
+                    <strong>24.5k</strong>
+                    <small className="up">+1.2k</small>
+                  </article>
+                </section>
+
+                <section className="profile-achievements glass-panel">
+                  <div className="profile-section-head">
+                    <h3>{t.profile.achievements}</h3>
+                  </div>
+                  <div className="ach-grid">
+                    <article className="ach-item"><Zap size={18} /><strong>Speed Demon</strong></article>
+                    <article className="ach-item"><BadgeCheck size={18} /><strong>Memory Master</strong></article>
+                    <article className="ach-item"><Trophy size={18} /><strong>Veteran</strong></article>
+                    <article className="ach-item muted"><Shield size={18} /><strong>Immortal</strong></article>
+                  </div>
+                </section>
+
+                <section className="profile-recent glass-panel">
+                  <div className="profile-section-head">
+                    <h3>{t.profile.recentMatches}</h3>
+                  </div>
+                  <div className="recent-table">
+                    <div className="recent-row head"><span>RESULT</span><span>DIFFICULTY</span><span>SCORE</span><span>XP</span><span>DATE</span></div>
+                    <div className="recent-row"><span className="up"><CircleCheck size={14} /> WIN</span><span>Insane</span><span>4,820</span><span className="up">+450</span><span>2h ago</span></div>
+                    <div className="recent-row"><span className="down"><CircleX size={14} /> LOSS</span><span>Hard</span><span>2,100</span><span className="up">+80</span><span>5h ago</span></div>
+                    <div className="recent-row"><span className="up"><CircleCheck size={14} /> WIN</span><span>Hard</span><span>3,540</span><span className="up">+320</span><span>Yesterday</span></div>
+                  </div>
+                </section>
+              </div>
+
+              <aside className="profile-right">
+                <section className="profile-side-card glass-panel">
+                  <h4>{t.profile.playtimeTrends}</h4>
+                  <p>{isArabic ? "هذا الأسبوع" : "This Week"} <strong>12.4 Hours</strong></p>
+                  <div className="xp-bar"><span style={{ width: "74%" }} /></div>
+                  <p>{isArabic ? "أفضل أداء" : "Peak Performance"} <strong>{isArabic ? "الأربعاء" : "Wednesdays"}</strong></p>
+                </section>
+
+                <section className="profile-side-card glass-panel">
+                  <h4>{t.profile.friendsOnline}</h4>
+                  <div className="friend-row"><span>CyberKnight</span><MessageSquare size={14} /></div>
+                  <div className="friend-row"><span>NeonRider</span><MessageSquare size={14} /></div>
+                  <div className="friend-row"><span>GlitchBox</span><Clock3 size={14} /></div>
+                  <button className="victory-menu-btn full">{t.profile.findPlayers}</button>
+                </section>
+
+                <button className="profile-link-btn glass-panel"><CreditCard size={16} /> {t.profile.subscription} <ChevronRight size={14} /></button>
+                <button className="profile-link-btn glass-panel"><Globe size={16} /> {t.profile.languageRegion} <ChevronRight size={14} /></button>
+                <button className="profile-link-btn glass-panel danger"><LogOut size={16} /> {t.profile.logout}</button>
+              </aside>
             </section>
           </ScreenShell>
         )}
@@ -677,7 +824,7 @@ export default function App() {
                   <span>{t.victory.rank}</span>
                   <strong>{t.victory.grandmaster}</strong>
                 </div>
-                <span className="rank-avatar"><UserRound size={14} /></span>
+                <button className="rank-avatar" onClick={() => setScreen("profile")}><UserRound size={14} /></button>
               </div>
             </header>
 

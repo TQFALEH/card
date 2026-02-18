@@ -1,4 +1,4 @@
-export type Screen = "home" | "factory" | "mode" | "ai" | "board" | "game" | "results";
+export type Screen = "home" | "factory" | "mode" | "ai" | "board" | "game" | "results" | "profile";
 
 export type GameMode = "solo" | "local2" | "local4";
 

@@ -61,33 +61,6 @@ p {
   place-items: center;
 }
 
-.lang-switcher {
-  position: fixed;
-  top: 10px;
-  inset-inline-end: 10px;
-  z-index: 50;
-  display: inline-flex;
-  border-radius: 999px;
-  overflow: hidden;
-  border: 1px solid rgba(0, 199, 255, 0.35);
-}
-
-.lang-switcher button {
-  border: 0;
-  background: rgba(4, 24, 35, 0.9);
-  color: #9ac0cf;
-  padding: 6px 10px;
-  font-size: 0.75rem;
-  letter-spacing: 0.1em;
-  cursor: pointer;
-}
-
-.lang-switcher button.active {
-  background: #2ac8f7;
-  color: #03131d;
-  font-weight: 700;
-}
-
 .animated-bg {
   position: absolute;
   inset: 0;
@@ -1425,6 +1398,48 @@ p {
   justify-content: space-between;
   gap: 8px;
   cursor: pointer;
+}
+
+.profile-language-wrap {
+  position: relative;
+}
+
+.profile-lang-current {
+  margin-inline-start: auto;
+  color: #2ac8f7;
+  font-size: 0.8rem;
+  letter-spacing: 0.08em;
+}
+
+.profile-language-menu {
+  position: absolute;
+  inset-inline-start: 0;
+  inset-inline-end: 0;
+  top: calc(100% + 6px);
+  border: 1px solid rgba(37, 144, 181, 0.45);
+  border-radius: 12px;
+  background: rgba(5, 31, 44, 0.92);
+  overflow: hidden;
+  z-index: 20;
+}
+
+.profile-language-menu button {
+  width: 100%;
+  border: 0;
+  text-align: start;
+  background: transparent;
+  color: #b8d8e5;
+  padding: 10px 12px;
+  cursor: pointer;
+}
+
+.profile-language-menu button + button {
+  border-top: 1px solid rgba(50, 116, 141, 0.24);
+}
+
+.profile-language-menu button.active {
+  background: rgba(42, 200, 247, 0.2);
+  color: #e6f7ff;
 }
 
 .profile-link-btn.danger {

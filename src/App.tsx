@@ -257,6 +257,7 @@ function boardPreviewCells(board: BoardPreset): number {
 
 export default function App() {
   const [language, setLanguage] = useState<Language>("en");
+  const [showLanguageMenu, setShowLanguageMenu] = useState(false);
   const [screen, setScreen] = useState<Screen>("home");
   const [mode, setMode] = useState<GameMode>(DEFAULT_MODE);
   const [difficulty, setDifficulty] = useState<AIDifficulty>(DEFAULT_AI);
@@ -413,6 +414,11 @@ export default function App() {
     setScreen("home");
   };
 
+  const selectLanguage = (lang: Language) => {
+    setLanguage(lang);
+    setShowLanguageMenu(false);
+  };
+
   useEffect(() => {
     gsap.to(".home-title-neon", {
       opacity: 0.62,
@@ -427,10 +433,6 @@ export default function App() {
     <main className={`app-root ${isArabic ? "rtl" : ""}`} dir={isArabic ? "rtl" : "ltr"} lang={language}>
       <AnimatedBackground />
       <div className="app-shell">
-        <div className="lang-switcher glass-panel">
-          <button className={language === "en" ? "active" : ""} onClick={() => setLanguage("en")}>EN</button>
-          <button className={language === "ar" ? "active" : ""} onClick={() => setLanguage("ar")}>AR</button>
-        </div>
         {screen === "home" && (
           <ScreenShell screenKey="home" className="home-screen">
             <header className="home-topbar">
@@ -673,7 +675,29 @@ export default function App() {
                 </section>
 
                 <button className="profile-link-btn glass-panel"><CreditCard size={16} /> {t.profile.subscription} <ChevronRight size={14} /></button>
-                <button className="profile-link-btn glass-panel"><Globe size={16} /> {t.profile.languageRegion} <ChevronRight size={14} /></button>
+                <div className="profile-language-wrap">
+                  <button className="profile-link-btn glass-panel" onClick={() => setShowLanguageMenu((v) => !v)}>
+                    <Globe size={16} /> {t.profile.languageRegion}
+                    <span className="profile-lang-current">{language.toUpperCase()}</span>
+                    <ChevronRight size={14} />
+                  </button>
+                  {showLanguageMenu && (
+                    <div className="profile-language-menu glass-panel">
+                      <button
+                        className={language === "en" ? "active" : ""}
+                        onClick={() => selectLanguage("en")}
+                      >
+                        English (EN)
+                      </button>
+                      <button
+                        className={language === "ar" ? "active" : ""}
+                        onClick={() => selectLanguage("ar")}
+                      >
+                        العربية (AR)
+                      </button>
+                    </div>
+                  )}
+                </div>
                 <button className="profile-link-btn glass-panel danger"><LogOut size={16} /> {t.profile.logout}</button>
               </aside>
             </section>

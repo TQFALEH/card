@@ -18,6 +18,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import GameBoard from "../components/GameBoard";
 import ScreenShell from "../components/ScreenShell";
 import { useAuth } from "../contexts/AuthContext";
+import { useSound } from "../contexts/SoundContext";
 import {
   fetchPlayers,
   fetchRoom,
@@ -63,6 +64,8 @@ export default function RoomPage() {
   const opponent = useMemo(() => players.find((p) => p.user_id !== user?.id), [players, user?.id]);
   const scores = roomState?.state_json.scores ?? {};
   const winner = roomState ? [...players].sort((a, b) => (scores[b.user_id] ?? 0) - (scores[a.user_id] ?? 0))[0] : null;
+  const { play } = useSound();
+  const prevStatusRef = useRef<Room["status"] | null>(null);
 
   const addToast = (text: string) => {
     const id = Date.now() + Math.random();
@@ -142,6 +145,7 @@ export default function RoomPage() {
       .on("broadcast", { event: "ready_changed" }, () => void refresh())
       .on("broadcast", { event: "room_started" }, () => {
         addToast("Match started");
+        play("start");
         void refresh();
       })
       .on("broadcast", { event: "room_rematch" }, () => {
@@ -178,6 +182,7 @@ export default function RoomPage() {
 
     void tryStart(room.room_id)
       .then(async () => {
+        play("start");
         await channelRef.current?.send({ type: "broadcast", event: "room_started", payload: {} });
         await refresh();
       })
@@ -221,6 +226,16 @@ export default function RoomPage() {
     );
   }, [toasts.length]);
 
+  useEffect(() => {
+    if (!room?.status) return;
+    const prev = prevStatusRef.current;
+    if (prev && prev !== room.status) {
+      if (room.status === "ended") play("victory");
+      if (room.status === "playing") play("start");
+    }
+    prevStatusRef.current = room.status;
+  }, [room?.status]);
+
   const onToggleReady = async () => {
     if (!room || !myPlayer) return;
     await setReady(room.room_id, !myPlayer.is_ready);
@@ -242,7 +257,10 @@ export default function RoomPage() {
       return;
     }
     try {
+      play("flip");
       const next: any = await flipCard(room.room_id, index, roomState.version);
+      if (next?.state_json?.pending?.type === "match") play("match");
+      if (next?.state_json?.pending?.type === "mismatch") play("mismatch");
       setRoomState({ room_id: room.room_id, state_json: next.state_json, version: next.version, updated_at: new Date().toISOString() });
       await channelRef.current?.send({ type: "broadcast", event: "state_updated", payload: { version: next.version } });
     } catch (err: any) {

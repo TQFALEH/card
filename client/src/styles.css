@@ -61,6 +61,22 @@ p {
   place-items: center;
 }
 
+.sound-fab {
+  position: fixed;
+  top: 14px;
+  right: 14px;
+  z-index: 30;
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  border: 1px solid rgba(36, 184, 226, 0.7);
+  background: rgba(3, 25, 36, 0.86);
+  color: #2bd5ff;
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+}
+
 .animated-bg {
   position: absolute;
   inset: 0;

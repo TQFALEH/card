@@ -269,6 +269,64 @@ p {
   gap: 24px;
 }
 
+.factory-screen {
+  width: min(900px, 100%);
+  border-radius: 22px;
+  padding: clamp(16px, 2vw, 26px);
+  display: grid;
+  gap: 18px;
+}
+
+.factory-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  border-bottom: 1px solid rgba(57, 138, 170, 0.25);
+  padding-bottom: 12px;
+}
+
+.factory-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.factory-card {
+  border: 1px solid rgba(34, 109, 139, 0.35);
+  background: rgba(3, 26, 37, 0.64);
+  border-radius: 12px;
+  padding: 14px;
+  display: grid;
+  gap: 10px;
+}
+
+.factory-card h3 {
+  color: #2bd0ff;
+  letter-spacing: 0.08em;
+  font-size: 1.1rem;
+}
+
+.factory-card p {
+  color: #8cb2c2;
+  font-size: 0.95rem;
+  line-height: 1.4;
+}
+
+.factory-card span {
+  width: fit-content;
+  border-radius: 999px;
+  border: 1px solid rgba(40, 177, 224, 0.45);
+  padding: 4px 9px;
+  font-size: 0.74rem;
+  letter-spacing: 0.09em;
+  color: #2dd0ff;
+}
+
+.factory-actions {
+  display: flex;
+  gap: 10px;
+}
+
 .setup-header {
   display: flex;
   justify-content: space-between;
@@ -1179,6 +1237,10 @@ p {
   .setup-split {
     grid-template-columns: 1fr;
   }
+
+  .factory-grid {
+    grid-template-columns: 1fr;
+  }
 }
 
 @media (max-width: 760px) {
@@ -1210,6 +1272,27 @@ p {
 
   .mission-grid {
     grid-template-columns: 1fr;
+  }
+
+  .factory-screen {
+    padding: 14px;
+    border-radius: 14px;
+  }
+
+  .factory-header {
+    align-items: center;
+  }
+
+  .factory-card h3 {
+    font-size: 1rem;
+  }
+
+  .factory-card p {
+    font-size: 0.86rem;
+  }
+
+  .factory-actions {
+    flex-direction: column;
   }
 
   .setup-screen {

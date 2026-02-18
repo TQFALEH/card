@@ -250,7 +250,7 @@ export default function App() {
                   <span>NEON</span>
                   <em className="home-title-neon">MEMORY</em>
                 </h1>
-                <button className="play-now-btn" onClick={() => setScreen("mode")}>
+                <button className="play-now-btn" onClick={() => setScreen("factory")}>
                   <Play size={18} fill="currentColor" />
                   PLAY NOW
                 </button>
@@ -273,6 +273,48 @@ export default function App() {
           </ScreenShell>
         )}
 
+        {screen === "factory" && (
+          <ScreenShell screenKey="factory" className="factory-screen glass-panel">
+            <header className="factory-header">
+              <div className="setup-title-wrap">
+                <span className="setup-icon"><Crosshair size={19} /></span>
+                <div>
+                  <h2>FACTORY CORE</h2>
+                  <p>SYSTEM BOOT // PRE-MISSION CHECKS</p>
+                </div>
+              </div>
+              <button className="icon-square-btn" onClick={() => setScreen("home")}>
+                <X size={20} />
+              </button>
+            </header>
+
+            <section className="factory-grid">
+              <article className="factory-card">
+                <h3>Memory Engine</h3>
+                <p>Card matrix generation, pair hashing, and anti-race turn locks are online.</p>
+                <span>STATUS: STABLE</span>
+              </article>
+              <article className="factory-card">
+                <h3>Animation Core</h3>
+                <p>GSAP timelines calibrated for 60 FPS on desktop and constrained mobile GPUs.</p>
+                <span>STATUS: OPTIMIZED</span>
+              </article>
+              <article className="factory-card">
+                <h3>AI Neural Bot</h3>
+                <p>Difficulty presets loaded with memory retention variance and weighted randomness.</p>
+                <span>STATUS: ARMED</span>
+              </article>
+            </section>
+
+            <footer className="factory-actions">
+              <button className="ghost-btn" onClick={() => setScreen("home")}>Abort</button>
+              <button className="primary-btn" onClick={() => setScreen("mode")}>
+                Enter Configuration
+              </button>
+            </footer>
+          </ScreenShell>
+        )}
+
         {screen === "mode" && (
           <ScreenShell screenKey="mode" className="setup-screen glass-panel">
             <header className="setup-header">
@@ -283,7 +325,7 @@ export default function App() {
                   <p>SYSTEM READY // MODE SELECTION</p>
                 </div>
               </div>
-              <button className="icon-square-btn" onClick={() => setScreen("home")}>
+              <button className="icon-square-btn" onClick={() => setScreen("factory")}>
                 <X size={20} />
               </button>
             </header>

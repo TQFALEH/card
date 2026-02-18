@@ -99,7 +99,7 @@ export default function ProfilePage() {
           <section className="profile-hero glass-panel">
             <div className="winner-avatar-ring">
               <div className="winner-avatar-core">
-                {displayAvatar ? <img className="avatar-image" src={displayAvatar} alt={profile?.username ?? "Player"} /> : (profile?.username?.[0] ?? "P").toUpperCase()}
+                {displayAvatar ? <img className="avatar-image " style={{ objectFit: "cover" }} src={displayAvatar} alt={profile?.username ?? "Player"} /> : (profile?.username?.[0] ?? "P").toUpperCase()}
               </div>
               <span className="winner-badge">GRANDMASTER</span>
             </div>

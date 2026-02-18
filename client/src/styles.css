@@ -2109,7 +2109,6 @@ p {
   font-size: 0.66rem;
 }
 
-.auth-form input,
 .setup-box select,
 .profile-card input {
   border: 1px solid rgba(53, 128, 157, 0.45);

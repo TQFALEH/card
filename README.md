@@ -10,6 +10,7 @@ This repo upgrades Memory Match into a full realtime online multiplayer game usi
 
 - `client/`: React application (auth, lobby, invite links, online game, profile)
 - `supabase/migrations/20260218_memory_online.sql`: schema + RLS + authoritative RPC functions
+- `supabase/migrations/20260218_rematch.sql`: same-room rematch RPC
 - `netlify.toml`: Netlify build config
 
 ## Features Implemented
@@ -27,6 +28,8 @@ This repo upgrades Memory Match into a full realtime online multiplayer game usi
   - plus room lifecycle functions (`create_room`, `join_room`, `set_player_ready`, `start_room_if_ready`)
 - GSAP animations preserved for card flip/match/mismatch feel
 - Reconnect handling with overlay + resync
+- Same-room rematch flow (`rematch_room`) resets room to lobby for instant replay
+- GSAP room-state transitions + animated neon toasts
 - Profile page with editable username + stats
 - Backend-driven dynamic config (`board_sizes`, `themes`)
 
@@ -35,6 +38,7 @@ This repo upgrades Memory Match into a full realtime online multiplayer game usi
 1. Create a Supabase project.
 2. In SQL Editor, run migration:
    - `supabase/migrations/20260218_memory_online.sql`
+   - `supabase/migrations/20260218_rematch.sql`
 3. In Supabase Realtime settings:
    - Ensure Broadcast + Presence are enabled.
 4. In Authentication:

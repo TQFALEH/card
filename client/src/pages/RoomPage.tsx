@@ -1,6 +1,7 @@
 import { RealtimeChannel } from "@supabase/supabase-js";
+import { gsap } from "gsap";
 import { Clipboard, Wifi, WifiOff } from "lucide-react";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import GameBoard from "../components/GameBoard";
 import ScreenShell from "../components/ScreenShell";
@@ -11,6 +12,7 @@ import {
   fetchState,
   flipCard,
   joinRoom,
+  rematchRoom,
   resolvePending,
   setReady,
   tryStart
@@ -34,6 +36,7 @@ export default function RoomPage() {
   const [reconnecting, setReconnecting] = useState(false);
   const [toasts, setToasts] = useState<Toast[]>([]);
   const channelRef = useRef<RealtimeChannel | null>(null);
+  const screenRef = useRef<HTMLDivElement | null>(null);
 
   const addToast = (text: string) => {
     const id = Date.now() + Math.random();
@@ -92,6 +95,10 @@ export default function RoomPage() {
         addToast("Match started");
         void refresh();
       })
+      .on("broadcast", { event: "room_rematch" }, () => {
+        addToast("Rematch requested");
+        void refresh();
+      })
       .on("broadcast", { event: "state_updated" }, () => void refresh())
       .subscribe((status) => {
         if (status === "SUBSCRIBED") {
@@ -142,6 +149,27 @@ export default function RoomPage() {
     return () => window.clearTimeout(timeout);
   }, [roomState?.version, roomState?.state_json.pending?.resolve_after]);
 
+  useLayoutEffect(() => {
+    if (!screenRef.current) return;
+    const ctx = gsap.context(() => {
+      gsap.fromTo(
+        ".lobby-card, .match-card, .result-card",
+        { autoAlpha: 0, y: 20, scale: 0.985 },
+        { autoAlpha: 1, y: 0, scale: 1, duration: 0.42, ease: "power3.out" }
+      );
+    }, screenRef);
+    return () => ctx.revert();
+  }, [room?.status]);
+
+  useLayoutEffect(() => {
+    if (!toasts.length) return;
+    gsap.fromTo(
+      ".toast-item",
+      { autoAlpha: 0, x: 14, scale: 0.96 },
+      { autoAlpha: 1, x: 0, scale: 1, duration: 0.25, stagger: 0.05, ease: "power2.out" }
+    );
+  }, [toasts.length]);
+
   const onToggleReady = async () => {
     if (!room || !myPlayer) return;
     await setReady(room.room_id, !myPlayer.is_ready);
@@ -164,12 +192,21 @@ export default function RoomPage() {
     await channelRef.current?.send({ type: "broadcast", event: "state_updated", payload: { version: next.version } });
   };
 
+  const onRematchSameRoom = async () => {
+    if (!room) return;
+    await rematchRoom(room.room_id);
+    await channelRef.current?.send({ type: "broadcast", event: "room_rematch", payload: {} });
+    addToast("Room reset to lobby");
+    await refresh();
+  };
+
   const scores = roomState?.state_json.scores ?? {};
 
   if (!room || !roomId) return <div className="loading-screen">Loading room...</div>;
 
   return (
     <ScreenShell screenKey={`room-${room.status}`} className="room-screen">
+      <div ref={screenRef}>
       {reconnecting && <div className="reconnect-overlay">Reconnecting...</div>}
       <div className="toast-stack">
         {toasts.map((t) => (
@@ -228,9 +265,13 @@ export default function RoomPage() {
               <div key={p.user_id} className="score-chip"><span>{p.profile?.username ?? "Player"}</span><strong>{scores[p.user_id] ?? 0}</strong></div>
             ))}
           </div>
-          <button className="primary-btn" onClick={() => navigate("/")}>Rematch (New Room)</button>
+          <div className="result-actions">
+            <button className="primary-btn" onClick={onRematchSameRoom}>Rematch Same Room</button>
+            <button className="ghost-btn" onClick={() => navigate("/")}>Rematch (New Room)</button>
+          </div>
         </div>
       )}
+      </div>
     </ScreenShell>
   );
 }

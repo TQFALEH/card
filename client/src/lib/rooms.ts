@@ -62,3 +62,8 @@ export async function resolvePending(roomId: string, expectedVersion: number) {
   if (error) throw error;
   return data as { state_json: CanonicalState; version: number };
 }
+
+export async function rematchRoom(roomId: string) {
+  const { error } = await supabase.rpc("rematch_room", { p_room_id: roomId });
+  if (error) throw error;
+}

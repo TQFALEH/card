@@ -67,6 +67,7 @@ button, input, select { font: inherit; }
 
 .room-screen { display: grid; gap: 12px; }
 .lobby-card, .match-card, .result-card { padding: 18px; display: grid; gap: 12px; }
+.lobby-card, .match-card, .result-card { border-color: rgba(41, 198, 240, 0.38); box-shadow: 0 14px 36px rgba(0,0,0,.4), inset 0 0 0 1px rgba(28,157,196,.16); }
 .lobby-players { display: grid; gap: 8px; }
 .lobby-player { padding: 10px; display: flex; justify-content: space-between; align-items: center; }
 .lobby-player p { margin: 0; color: var(--muted); }
@@ -109,11 +110,18 @@ button, input, select { font: inherit; }
 }
 
 .toast-stack { position: fixed; top: 14px; right: 14px; z-index: 50; display: grid; gap: 8px; }
-.toast-item { background: rgba(6, 48, 67, .92); border: 1px solid rgba(44,188,229,.55); padding: 8px 11px; border-radius: 8px; }
+.toast-item { background: rgba(6, 48, 67, .92); border: 1px solid rgba(44,188,229,.55); padding: 8px 11px; border-radius: 8px; box-shadow: 0 0 18px rgba(36,189,230,.2); }
+
+.result-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
 
 @media (max-width: 900px) {
   .setup-grid { grid-template-columns: 1fr; }
   .match-header { flex-direction: column; align-items: flex-start; }
+  .result-actions { grid-template-columns: 1fr; }
 }
 
 @media (max-width: 720px) {

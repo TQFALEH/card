@@ -100,12 +100,18 @@ p {
   min-height: calc(100vh - 30px);
   display: grid;
   grid-template-rows: auto 1fr auto;
-  gap: clamp(20px, 2.8vw, 34px);
+  gap: clamp(16px, 2.2vw, 26px);
 }
 
 .home-topbar {
   display: flex;
   justify-content: space-between;
+  align-items: center;
+}
+
+.home-top-actions {
+  display: inline-flex;
+  gap: 8px;
   align-items: center;
 }
 
@@ -120,22 +126,27 @@ p {
 }
 
 .status-chip p {
-  font-size: 0.67rem;
+  font-size: 0.58rem;
   color: #36c8ff;
-  letter-spacing: 0.1em;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
 }
 
 .status-chip strong {
-  font-size: 0.95rem;
+  font-size: 0.84rem;
+  letter-spacing: 0.06em;
 }
 
 .currency-pill {
   border: 1px solid var(--line-soft);
   border-radius: 999px;
-  padding: 9px 15px;
+  padding: 7px 12px;
   background: rgba(2, 21, 31, 0.76);
-  font-size: 1.02rem;
+  font-size: 0.95rem;
   font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
 }
 
 .home-center {
@@ -143,7 +154,7 @@ p {
   grid-template-columns: 190px minmax(280px, 1fr) 190px;
   align-items: center;
   gap: clamp(10px, 2.6vw, 28px);
-  padding-top: clamp(26px, 3.4vw, 48px);
+  padding-top: clamp(12px, 1.7vw, 20px);
 }
 
 .home-side-left,
@@ -170,13 +181,13 @@ p {
 }
 
 .home-stat-card strong {
-  font-size: clamp(1.65rem, 2.6vw, 2.22rem);
+  font-size: clamp(1.05rem, 1.7vw, 1.85rem);
 }
 
 .home-hero {
   display: grid;
   justify-items: center;
-  gap: 20px;
+  gap: 16px;
 }
 
 .home-hero-tag {
@@ -195,7 +206,7 @@ p {
 }
 
 .home-title span {
-  font-size: clamp(3.1rem, 9vw, 8.6rem);
+  font-size: clamp(3rem, 7vw, 6.3rem);
   font-style: italic;
   font-weight: 700;
   color: #f4fbff;
@@ -205,7 +216,7 @@ p {
 .home-title em {
   font-style: normal;
   font-weight: 800;
-  font-size: clamp(4rem, 11vw, 10.6rem);
+  font-size: clamp(4.1rem, 8.2vw, 7.5rem);
   letter-spacing: 0.05em;
   color: var(--cyan-strong);
   text-shadow: 0 0 26px rgba(25, 208, 255, 0.56);
@@ -216,9 +227,9 @@ p {
   background: #2ac8f7;
   color: #02111a;
   border-radius: 12px;
-  min-width: 290px;
-  padding: 16px 24px;
-  font-size: 2rem;
+  min-width: 260px;
+  padding: 14px 20px;
+  font-size: 1.8rem;
   font-weight: 700;
   letter-spacing: 0.08em;
   display: inline-flex;
@@ -243,8 +254,8 @@ p {
   border: 1px solid rgba(23, 137, 178, 0.7);
   background: rgba(3, 25, 36, 0.84);
   border-radius: 11px;
-  padding: 11px 20px;
-  font-size: 1.25rem;
+  padding: 10px 16px;
+  font-size: 1rem;
   font-weight: 700;
   letter-spacing: 0.06em;
   display: inline-flex;
@@ -371,7 +382,7 @@ p {
 
 .setup-title-wrap h2 {
   letter-spacing: 0.09em;
-  font-size: clamp(1.9rem, 3vw, 2.4rem);
+  font-size: clamp(1.45rem, 2.2vw, 2rem);
 }
 
 .setup-title-wrap p {
@@ -394,7 +405,7 @@ p {
 
 .setup-label {
   color: #26d0ff;
-  font-size: 1.4rem;
+  font-size: 1rem;
   letter-spacing: 0.18em;
   margin-bottom: 14px;
 }
@@ -434,11 +445,11 @@ p {
 }
 
 .mission-card strong {
-  font-size: 2rem;
+  font-size: 1.9rem;
 }
 
 .mission-card p {
-  font-size: 1.4rem;
+  font-size: 1.2rem;
   color: var(--muted);
 }
 
@@ -494,12 +505,12 @@ p {
 }
 
 .level-row strong {
-  font-size: 1.85rem;
+  font-size: 1.6rem;
 }
 
 .level-row p {
   color: #87a9b8;
-  font-size: 1.17rem;
+  font-size: 1rem;
 }
 
 .edge-notch {
@@ -602,7 +613,7 @@ p {
   border: 1px solid rgba(36, 207, 255, 0.86);
   background: #2ac8f7;
   color: #03131d;
-  font-size: 1.72rem;
+  font-size: 1.25rem;
   font-weight: 800;
   letter-spacing: 0.2em;
   padding: 15px;
@@ -615,7 +626,7 @@ p {
 .reset-btn {
   border: 1px solid rgba(41, 131, 166, 0.45);
   background: rgba(4, 28, 40, 0.86);
-  font-size: 1.5rem;
+  font-size: 1.1rem;
   letter-spacing: 0.11em;
 }
 
@@ -631,7 +642,20 @@ p {
   background: rgba(4, 30, 43, 0.7);
   padding: 12px;
   display: grid;
-  gap: 8px;
+  gap: 10px;
+}
+
+.match-hud-main {
+  display: grid;
+  grid-template-columns: minmax(220px, 1fr) auto minmax(220px, 1fr);
+  gap: 10px;
+  align-items: center;
+}
+
+.match-hud-center {
+  display: grid;
+  gap: 7px;
+  justify-items: center;
 }
 
 .match-hud-titleblock {
@@ -639,8 +663,8 @@ p {
   display: inline-flex;
   gap: 8px;
   align-items: center;
-  font-size: 1.55rem;
-  letter-spacing: 0.04em;
+  font-size: 1.2rem;
+  letter-spacing: 0.08em;
   color: #d9f8ff;
 }
 
@@ -650,7 +674,7 @@ p {
   border-radius: 999px;
   background: #1ec8f6;
   color: #032332;
-  font-size: 0.95rem;
+  font-size: 0.76rem;
   font-weight: 700;
   letter-spacing: 0.08em;
 }
@@ -684,21 +708,31 @@ p {
 }
 
 .match-player-card strong {
-  font-size: 1.85rem;
+  font-size: 1.65rem;
   letter-spacing: 0.08em;
+}
+
+.match-player-avatar {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  overflow: hidden;
+  display: inline-grid;
+  place-items: center;
+  border: 1px solid rgba(45, 211, 255, 0.5);
 }
 
 .arena-board-stage {
   border: 1px solid rgba(18, 101, 131, 0.45);
   border-radius: 16px;
-  background: rgba(4, 28, 41, 0.64);
+  background: transparent;
   padding: clamp(8px, 1.3vw, 14px);
 }
 
 .board-grid {
   display: grid;
-  gap: 12px;
-  width: min(760px, 100%);
+  gap: 10px;
+  width: min(760px, calc(100vw - 80px));
   margin: 0 auto;
   perspective: 900px;
 }
@@ -827,7 +861,10 @@ p {
 }
 
 .arena-metric strong {
-  font-size: 2rem;
+  font-size: 1.9rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
 }
 
 .footer-control-btn,
@@ -933,6 +970,14 @@ p {
   place-items: center;
   background: rgba(16, 129, 164, 0.3);
   cursor: pointer;
+  overflow: hidden;
+}
+
+.avatar-image {
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: cover;
 }
 
 .victory-hero {
@@ -992,6 +1037,7 @@ p {
   place-items: center;
   font-size: 2.8rem;
   font-weight: 800;
+  overflow: hidden;
 }
 
 .winner-badge {
@@ -1535,6 +1581,10 @@ p {
     margin: 14px 0;
   }
 
+  .match-hud-main {
+    grid-template-columns: 1fr;
+  }
+
   .setup-split {
     grid-template-columns: 1fr;
   }
@@ -1577,6 +1627,16 @@ p {
   .home-secondary-actions {
     flex-direction: column;
     width: 100%;
+  }
+
+  .home-topbar {
+    gap: 8px;
+    align-items: flex-start;
+  }
+
+  .home-top-actions {
+    flex-wrap: wrap;
+    justify-content: flex-end;
   }
 
   .secondary-neon-btn {
@@ -1746,7 +1806,7 @@ p {
   }
 
   .arena-footer-bar {
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: 1fr;
   }
 
   .footer-main-btn,

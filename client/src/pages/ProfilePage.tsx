@@ -14,7 +14,7 @@ import {
   UserRound,
   Zap
 } from "lucide-react";
-import { useEffect, useState } from "react";
+import { ChangeEvent, useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import ScreenShell from "../components/ScreenShell";
 import { useAuth } from "../contexts/AuthContext";
@@ -26,12 +26,20 @@ export default function ProfilePage() {
   const [username, setUsername] = useState(profile?.username ?? "");
   const [stats, setStats] = useState<Stats | null>(null);
   const [saving, setSaving] = useState(false);
+  const [uploading, setUploading] = useState(false);
+  const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
+  const fileRef = useRef<HTMLInputElement | null>(null);
   const navigate = useNavigate();
+  const displayAvatar = useMemo(() => avatarPreview || profile?.avatar_url || null, [avatarPreview, profile?.avatar_url]);
 
   useEffect(() => {
     if (!user) return;
     void supabase.from("stats").select("*").eq("user_id", user.id).maybeSingle().then(({ data }) => setStats(data as Stats | null));
   }, [user?.id]);
+
+  useEffect(() => {
+    setUsername(profile?.username ?? "");
+  }, [profile?.username]);
 
   const save = async () => {
     if (!user) return;
@@ -39,6 +47,39 @@ export default function ProfilePage() {
     await supabase.from("profiles").upsert({ user_id: user.id, username });
     await refreshProfile();
     setSaving(false);
+  };
+
+  const onPickAvatar = () => fileRef.current?.click();
+
+  const onAvatarFile = async (event: ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    event.target.value = "";
+    if (!user || !file) return;
+
+    const allowed = ["image/png", "image/jpeg", "image/jpg", "image/webp", "image/avif"];
+    if (!allowed.includes(file.type)) {
+      return;
+    }
+
+    setUploading(true);
+    try {
+      const ext = (file.name.split(".").pop() || "png").toLowerCase();
+      const path = `${user.id}/avatar.${ext}`;
+      const { error: uploadError } = await supabase.storage.from("avatars").upload(path, file, {
+        upsert: true,
+        contentType: file.type
+      });
+      if (uploadError) throw uploadError;
+
+      const { data } = supabase.storage.from("avatars").getPublicUrl(path);
+      if (!data?.publicUrl) throw new Error("Failed to get avatar URL");
+
+      await supabase.from("profiles").upsert({ user_id: user.id, username, avatar_url: data.publicUrl });
+      setAvatarPreview(data.publicUrl);
+      await refreshProfile();
+    } finally {
+      setUploading(false);
+    }
   };
 
   return (
@@ -57,7 +98,9 @@ export default function ProfilePage() {
         <div className="profile-left">
           <section className="profile-hero glass-panel">
             <div className="winner-avatar-ring">
-              <div className="winner-avatar-core">{(profile?.username?.[0] ?? "P").toUpperCase()}</div>
+              <div className="winner-avatar-core">
+                {displayAvatar ? <img className="avatar-image" src={displayAvatar} alt={profile?.username ?? "Player"} /> : (profile?.username?.[0] ?? "P").toUpperCase()}
+              </div>
               <span className="winner-badge">GRANDMASTER</span>
             </div>
             <div className="profile-hero-text">
@@ -70,7 +113,9 @@ export default function ProfilePage() {
               <div className="profile-actions">
                 <button className="victory-play-btn" onClick={save} disabled={saving}><User size={15} /> {saving ? "Saving..." : "Edit Profile"}</button>
                 <button className="victory-menu-btn"><Shield size={15} /> Security</button>
+                <button className="victory-menu-btn" onClick={onPickAvatar} disabled={uploading}>{uploading ? "Uploading..." : "Upload Avatar"}</button>
               </div>
+              <input ref={fileRef} type="file" accept=".png,.jpg,.jpeg,.webp,.avif,image/png,image/jpeg,image/webp,image/avif" hidden onChange={onAvatarFile} />
             </div>
           </section>
 

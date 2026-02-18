@@ -3,6 +3,7 @@ import { gsap } from "gsap";
 import {
   Clipboard,
   Cog,
+  Grid2X2,
   Menu,
   RotateCcw,
   Rocket,
@@ -61,6 +62,7 @@ export default function RoomPage() {
   const myPlayer = useMemo(() => players.find((p) => p.user_id === user?.id), [players, user?.id]);
   const opponent = useMemo(() => players.find((p) => p.user_id !== user?.id), [players, user?.id]);
   const scores = roomState?.state_json.scores ?? {};
+  const winner = roomState ? [...players].sort((a, b) => (scores[b.user_id] ?? 0) - (scores[a.user_id] ?? 0))[0] : null;
 
   const addToast = (text: string) => {
     const id = Date.now() + Math.random();
@@ -355,18 +357,34 @@ export default function RoomPage() {
         {room.status === "playing" && roomState && (
           <section className="arena-screen">
             <header className="match-hud-frame">
-              <div className="match-hud-titleblock">
-                <Cog size={14} />
-                <span>MEMORY MATCH ONLINE</span>
-              </div>
-              <div className="turn-pill">{roomState.state_json.current_player === user?.id ? "YOUR TURN" : "OPPONENT TURN"}</div>
-              <div className="match-players-strip">
-                {players.map((p) => (
-                  <article key={p.user_id} className={`match-player-card ${roomState.state_json.current_player === p.user_id ? "active" : ""}`}>
-                    <div className="match-player-meta"><UserRound size={13} /><span>{p.profile?.username ?? "Player"}</span></div>
-                    <strong>{scores[p.user_id] ?? 0}</strong>
-                  </article>
-                ))}
+              <div className="match-hud-main">
+                <article className={`match-player-card ${roomState.state_json.current_player === myPlayer?.user_id ? "active" : ""}`}>
+                  <div className="match-player-meta">
+                    <span className="match-player-avatar">
+                      {myPlayer?.profile?.avatar_url ? <img src={myPlayer.profile.avatar_url} className="avatar-image" alt={myPlayer.profile.username} /> : <UserRound size={13} />}
+                    </span>
+                    <span>{myPlayer?.profile?.username ?? "PLAYER 1"}</span>
+                  </div>
+                  <strong>{scores[myPlayer?.user_id ?? ""] ?? 0}</strong>
+                </article>
+
+                <div className="match-hud-center">
+                  <div className="match-hud-titleblock">
+                    <Cog size={14} />
+                    <span>MEMORY MATCH</span>
+                  </div>
+                  <div className="turn-pill">{roomState.state_json.current_player === user?.id ? "CURRENT TURN: YOU" : "CURRENT TURN: OPPONENT"}</div>
+                </div>
+
+                <article className={`match-player-card ${roomState.state_json.current_player === opponent?.user_id ? "active" : ""}`}>
+                  <div className="match-player-meta">
+                    <span className="match-player-avatar">
+                      {opponent?.profile?.avatar_url ? <img src={opponent.profile.avatar_url} className="avatar-image" alt={opponent.profile.username} /> : <UserRound size={13} />}
+                    </span>
+                    <span>{opponent?.profile?.username ?? "PLAYER 2"}</span>
+                  </div>
+                  <strong>{scores[opponent?.user_id ?? ""] ?? 0}</strong>
+                </article>
               </div>
             </header>
 
@@ -376,9 +394,9 @@ export default function RoomPage() {
 
             <footer className="arena-footer-bar">
               <div className="arena-metric"><span>SESSION TIME</span><strong>{formatDuration(elapsedMs)}</strong></div>
-              <div className="arena-metric"><span>TOTAL MOVES</span><strong>{roomState.state_json.moves}</strong></div>
-              <button className="footer-control-btn"><Wifi size={16} /> {opponent?.profile?.username ?? "Opponent"}: {onlineIds.includes(opponent?.user_id ?? "") ? "Online" : "Offline"}</button>
-              <button className="footer-main-btn" onClick={() => navigate("/")}><RotateCcw size={16} /> EXIT MATCH</button>
+              <div className="arena-metric"><span>TOTAL MOVES</span><strong><Grid2X2 size={14} /> {roomState.state_json.moves}</strong></div>
+              <button className="footer-control-btn"><Cog size={16} /> Settings</button>
+              <button className="footer-main-btn" onClick={() => navigate("/")}><RotateCcw size={16} /> RESTART GAME</button>
             </footer>
           </section>
         )}
@@ -396,7 +414,9 @@ export default function RoomPage() {
                   <span>RANK</span>
                   <strong>Online Duel</strong>
                 </div>
-                <button className="rank-avatar" onClick={() => navigate("/profile")}><UserRound size={14} /></button>
+                <button className="rank-avatar" onClick={() => navigate("/profile")}>
+                  {profile?.avatar_url ? <img src={profile.avatar_url} alt={profile.username ?? "Player"} className="avatar-image" /> : <UserRound size={14} />}
+                </button>
               </div>
             </header>
 
@@ -408,10 +428,12 @@ export default function RoomPage() {
             <section className="victory-main-grid">
               <article className="winner-panel glass-panel">
                 <div className="winner-avatar-ring">
-                  <div className="winner-avatar-core">{(myPlayer?.profile?.username?.[0] ?? "P").toUpperCase()}</div>
+                  <div className="winner-avatar-core">
+                    {winner?.profile?.avatar_url ? <img src={winner.profile.avatar_url} className="avatar-image" alt={winner.profile.username} /> : (winner?.profile?.username?.[0] ?? "P").toUpperCase()}
+                  </div>
                   <span className="winner-badge">MVP</span>
                 </div>
-                <h3>{[...players].sort((a, b) => (scores[b.user_id] ?? 0) - (scores[a.user_id] ?? 0))[0]?.profile?.username ?? "Winner"}</h3>
+                <h3>{winner?.profile?.username ?? "Winner"}</h3>
                 <p>GLOBAL LEADERBOARD #{1200 + Math.max(1, roomState.state_json.moves)}</p>
                 <div className="xp-panel">
                   <div className="xp-row"><span>XP EARNED</span><strong>+{Math.max(850, accuracy * 22)} XP</strong></div>

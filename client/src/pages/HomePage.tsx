@@ -1,7 +1,8 @@
 import { useState } from "react";
-import { BarChart3, Cog, Play, Rocket, User, Users, UsersRound, X } from "lucide-react";
+import { BarChart3, Coins, Cog, Play, Rocket, Server, User, UserRound, Users, UsersRound, X } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import ScreenShell from "../components/ScreenShell";
+import { useAuth } from "../contexts/AuthContext";
 import { useConfig } from "../contexts/ConfigContext";
 import { createRoom } from "../lib/rooms";
 import type { BoardSizeId } from "../types";
@@ -13,6 +14,7 @@ const boardTitles: Record<string, string> = {
 };
 
 export default function HomePage() {
+  const { profile } = useAuth();
   const { config } = useConfig();
   const [showSetup, setShowSetup] = useState(false);
   const [boardSize, setBoardSize] = useState<BoardSizeId>((config.boardSizes[0]?.id as BoardSizeId) ?? "4x4");
@@ -147,7 +149,30 @@ export default function HomePage() {
 
   return (
     <ScreenShell screenKey="home" className="home-screen">
+      <header className="home-topbar">
+        <div className="status-chip">
+          <Server size={14} />
+          <div>
+            <p>SYSTEM STATUS</p>
+            <strong>ONLINE // V2.0.4</strong>
+          </div>
+        </div>
+
+        <div className="home-top-actions">
+          <div className="currency-pill"><Coins size={14} /> 12,450</div>
+          <div className="currency-pill">480</div>
+          <button className="rank-avatar" onClick={() => navigate("/profile")}>
+            {profile?.avatar_url ? <img src={profile.avatar_url} alt={profile.username} className="avatar-image" /> : <UserRound size={14} />}
+          </button>
+        </div>
+      </header>
+
       <div className="home-center">
+        <div className="home-side-left">
+          <article className="home-stat-card"><span>GLOBAL RANK</span><strong>#1,242</strong></article>
+          <article className="home-stat-card"><span>TOTAL WINS</span><strong>154</strong></article>
+        </div>
+
         <section className="home-hero">
           <p className="home-hero-tag">ULTRA HD EXPERIENCE</p>
           <h1 className="home-title">
@@ -166,7 +191,7 @@ export default function HomePage() {
 
         <div className="home-side-right">
           <article className="home-stat-card"><span>HIGH SCORE</span><strong>98,420</strong></article>
-          <article className="home-stat-card"><span>CURRENT EVENT</span><strong>ONLINE DUEL</strong></article>
+          <article className="home-stat-card"><span>CURRENT EVENT</span><strong>NEON SUMMER '24</strong></article>
         </div>
       </div>
 

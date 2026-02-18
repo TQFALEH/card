@@ -1,6 +1,17 @@
 import { RealtimeChannel } from "@supabase/supabase-js";
 import { gsap } from "gsap";
-import { Clipboard, Wifi, WifiOff } from "lucide-react";
+import {
+  Clipboard,
+  Cog,
+  Menu,
+  RotateCcw,
+  Rocket,
+  Timer,
+  UserRound,
+  Wifi,
+  WifiOff,
+  Zap
+} from "lucide-react";
 import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import GameBoard from "../components/GameBoard";
@@ -18,11 +29,20 @@ import {
   tryStart
 } from "../lib/rooms";
 import { supabase } from "../lib/supabase";
-import type { CanonicalState, Room, RoomPlayer, RoomStateRow } from "../types";
+import type { Room, RoomPlayer, RoomStateRow } from "../types";
 
 interface Toast {
   id: number;
   text: string;
+}
+
+function formatDuration(ms: number): string {
+  const totalSeconds = Math.floor(ms / 1000);
+  const minutes = Math.floor(totalSeconds / 60)
+    .toString()
+    .padStart(2, "0");
+  const seconds = (totalSeconds % 60).toString().padStart(2, "0");
+  return `${minutes}:${seconds}`;
 }
 
 export default function RoomPage() {
@@ -38,6 +58,10 @@ export default function RoomPage() {
   const channelRef = useRef<RealtimeChannel | null>(null);
   const screenRef = useRef<HTMLDivElement | null>(null);
 
+  const myPlayer = useMemo(() => players.find((p) => p.user_id === user?.id), [players, user?.id]);
+  const opponent = useMemo(() => players.find((p) => p.user_id !== user?.id), [players, user?.id]);
+  const scores = roomState?.state_json.scores ?? {};
+
   const addToast = (text: string) => {
     const id = Date.now() + Math.random();
     setToasts((prev) => [...prev, { id, text }]);
@@ -45,9 +69,6 @@ export default function RoomPage() {
       setToasts((prev) => prev.filter((t) => t.id !== id));
     }, 2500);
   };
-
-  const myPlayer = useMemo(() => players.find((p) => p.user_id === user?.id), [players, user?.id]);
-  const opponent = useMemo(() => players.find((p) => p.user_id !== user?.id), [players, user?.id]);
 
   const refresh = async () => {
     if (!roomId) return;
@@ -153,7 +174,7 @@ export default function RoomPage() {
     if (!screenRef.current) return;
     const ctx = gsap.context(() => {
       gsap.fromTo(
-        ".lobby-card, .match-card, .result-card",
+        ".setup-screen, .arena-screen, .victory-screen",
         { autoAlpha: 0, y: 20, scale: 0.985 },
         { autoAlpha: 1, y: 0, scale: 1, duration: 0.42, ease: "power3.out" }
       );
@@ -200,77 +221,171 @@ export default function RoomPage() {
     await refresh();
   };
 
-  const scores = roomState?.state_json.scores ?? {};
-
   if (!room || !roomId) return <div className="loading-screen">Loading room...</div>;
+
+  const elapsedMs = roomState?.state_json.started_at
+    ? Math.max(0, (roomState.state_json.ended_at ? new Date(roomState.state_json.ended_at).getTime() : Date.now()) - new Date(roomState.state_json.started_at).getTime())
+    : 0;
+  const accuracy = roomState?.state_json.attempts ? Math.round((roomState.state_json.matched_pairs / roomState.state_json.attempts) * 100) : 0;
 
   return (
     <ScreenShell screenKey={`room-${room.status}`} className="room-screen">
       <div ref={screenRef}>
-      {reconnecting && <div className="reconnect-overlay">Reconnecting...</div>}
-      <div className="toast-stack">
-        {toasts.map((t) => (
-          <div key={t.id} className="toast-item">{t.text}</div>
-        ))}
-      </div>
+        {reconnecting && <div className="reconnect-overlay">Reconnecting...</div>}
+        <div className="toast-stack">
+          {toasts.map((t) => (
+            <div key={t.id} className="toast-item">{t.text}</div>
+          ))}
+        </div>
 
-      {room.status === "lobby" && (
-        <div className="lobby-card glass-panel">
-          <h1>Room Lobby</h1>
-          <p>Room ID: <strong>{roomId}</strong></p>
-          <button className="ghost-btn" onClick={onCopyInvite}><Clipboard size={15} /> Copy Invite Link</button>
-          <div className="lobby-players">
-            {players.map((p) => (
-              <article key={p.user_id} className="lobby-player glass-panel">
+        {room.status === "lobby" && (
+          <section className="setup-screen glass-panel">
+            <header className="setup-header">
+              <div className="setup-title-wrap">
+                <span className="setup-icon"><Rocket size={18} /></span>
                 <div>
-                  <strong>{p.profile?.username ?? p.user_id.slice(0, 6)}</strong>
-                  <p>{p.is_host ? "Host" : "Guest"}</p>
+                  <h2>ONLINE LOBBY</h2>
+                  <p>ROOM READY // WAITING FOR PLAYERS</p>
                 </div>
-                <div className="presence-pill">
-                  {onlineIds.includes(p.user_id) ? <Wifi size={14} /> : <WifiOff size={14} />}
-                  {p.is_ready ? "Ready" : "Not Ready"}
+              </div>
+              <button className="icon-square-btn" onClick={() => navigate("/")}><Menu size={18} /></button>
+            </header>
+
+            <section>
+              <h3 className="setup-label">1. ROOM INFORMATION</h3>
+              <div className="mission-grid">
+                <article className="mission-card selected">
+                  <strong>Room ID</strong>
+                  <p>{roomId}</p>
+                  <button className="ghost-btn" onClick={onCopyInvite}><Clipboard size={15} /> Copy Invite</button>
+                </article>
+                <article className="mission-card">
+                  <strong>Board</strong>
+                  <p>{room.board_size}</p>
+                  <small>{room.theme.toUpperCase()}</small>
+                </article>
+                <article className="mission-card">
+                  <strong>Status</strong>
+                  <p>{room.status.toUpperCase()}</p>
+                  <small>{players.length}/2 PLAYERS</small>
+                </article>
+              </div>
+            </section>
+
+            <section>
+              <h3 className="setup-label">2. PLAYERS</h3>
+              <div className="lobby-players">
+                {players.map((p) => (
+                  <article key={p.user_id} className="lobby-player glass-panel">
+                    <div>
+                      <strong>{p.profile?.username ?? p.user_id.slice(0, 6)}</strong>
+                      <p>{p.is_host ? "Host" : "Guest"}</p>
+                    </div>
+                    <div className="presence-pill">
+                      {onlineIds.includes(p.user_id) ? <Wifi size={14} /> : <WifiOff size={14} />}
+                      {p.is_ready ? "Ready" : "Not Ready"}
+                    </div>
+                  </article>
+                ))}
+              </div>
+            </section>
+
+            <footer className="setup-footer">
+              <button className="initialize-btn" onClick={onToggleReady}>{myPlayer?.is_ready ? "UNREADY" : "READY"}</button>
+              <button className="reset-btn" onClick={() => navigate("/")}>EXIT</button>
+            </footer>
+          </section>
+        )}
+
+        {room.status === "playing" && roomState && (
+          <section className="arena-screen">
+            <header className="match-hud-frame">
+              <div className="match-hud-titleblock">
+                <Cog size={14} />
+                <span>MEMORY MATCH ONLINE</span>
+              </div>
+              <div className="turn-pill">{roomState.state_json.current_player === user?.id ? "YOUR TURN" : "OPPONENT TURN"}</div>
+              <div className="match-players-strip">
+                {players.map((p) => (
+                  <article key={p.user_id} className={`match-player-card ${roomState.state_json.current_player === p.user_id ? "active" : ""}`}>
+                    <div className="match-player-meta"><UserRound size={13} /><span>{p.profile?.username ?? "Player"}</span></div>
+                    <strong>{scores[p.user_id] ?? 0}</strong>
+                  </article>
+                ))}
+              </div>
+            </header>
+
+            <section className="arena-board-stage">
+              <GameBoard state={roomState.state_json} onCardClick={onCardClick} />
+            </section>
+
+            <footer className="arena-footer-bar">
+              <div className="arena-metric"><span>SESSION TIME</span><strong>{formatDuration(elapsedMs)}</strong></div>
+              <div className="arena-metric"><span>TOTAL MOVES</span><strong>{roomState.state_json.moves}</strong></div>
+              <button className="footer-control-btn"><Wifi size={16} /> {opponent?.profile?.username ?? "Opponent"}: {onlineIds.includes(opponent?.user_id ?? "") ? "Online" : "Offline"}</button>
+              <button className="footer-main-btn" onClick={() => navigate("/")}><RotateCcw size={16} /> EXIT MATCH</button>
+            </footer>
+          </section>
+        )}
+
+        {room.status === "ended" && roomState && (
+          <section className="victory-screen">
+            <header className="victory-topbar">
+              <div className="victory-brand">
+                <span className="victory-brand-icon"><Zap size={15} /></span>
+                <strong>Memory Match</strong>
+              </div>
+              <div className="victory-top-actions">
+                <button className="icon-square-btn"><Cog size={17} /></button>
+                <div className="rank-pill">
+                  <span>RANK</span>
+                  <strong>Online Duel</strong>
+                </div>
+                <button className="rank-avatar" onClick={() => navigate("/profile")}><UserRound size={14} /></button>
+              </div>
+            </header>
+
+            <section className="victory-hero">
+              <p>MATCH COMPLETED</p>
+              <h2>RESULTS</h2>
+            </section>
+
+            <section className="victory-main-grid">
+              <article className="winner-panel glass-panel">
+                <div className="winner-avatar-ring">
+                  <div className="winner-avatar-core">{(myPlayer?.profile?.username?.[0] ?? "P").toUpperCase()}</div>
+                  <span className="winner-badge">MVP</span>
+                </div>
+                <h3>{[...players].sort((a, b) => (scores[b.user_id] ?? 0) - (scores[a.user_id] ?? 0))[0]?.profile?.username ?? "Winner"}</h3>
+                <p>GLOBAL LEADERBOARD #{1200 + Math.max(1, roomState.state_json.moves)}</p>
+                <div className="xp-panel">
+                  <div className="xp-row"><span>XP EARNED</span><strong>+{Math.max(850, accuracy * 22)} XP</strong></div>
+                  <div className="xp-bar"><span style={{ width: `${Math.min(96, accuracy)}%` }} /></div>
+                  <small>LEVEL 42 · 450 XP TO LEVEL 43</small>
                 </div>
               </article>
-            ))}
-          </div>
-          <button className="primary-btn" onClick={onToggleReady}>{myPlayer?.is_ready ? "Unready" : "Ready"}</button>
-          <button className="ghost-btn" onClick={() => navigate("/")}>Back Home</button>
-        </div>
-      )}
 
-      {room.status === "playing" && roomState && (
-        <div className="match-card glass-panel">
-          <header className="match-header">
-            <h2>{roomState.state_json.current_player === user?.id ? "Your turn" : "Opponent turn"}</h2>
-            <p>{opponent?.profile?.username ?? "Opponent"}: {onlineIds.includes(opponent?.user_id ?? "") ? "Online" : "Offline"}</p>
-          </header>
-          <div className="score-row">
-            {players.map((p) => (
-              <div key={p.user_id} className={`score-chip ${roomState.state_json.current_player === p.user_id ? "active" : ""}`}>
-                <span>{p.profile?.username ?? "Player"}</span>
-                <strong>{scores[p.user_id] ?? 0}</strong>
+              <div className="victory-right">
+                <div className="victory-stats-grid">
+                  <article className="victory-stat-card glass-panel"><p><Zap size={13} /> MOVES</p><strong>{roomState.state_json.moves}</strong><small>BEST: {Math.max(8, roomState.state_json.moves - 3)}</small></article>
+                  <article className="victory-stat-card glass-panel"><p><Timer size={13} /> TIME</p><strong>{formatDuration(elapsedMs)}</strong><small>AVG: 01:55</small></article>
+                  <article className="victory-stat-card glass-panel"><p><Cog size={13} /> ACCURACY</p><strong>{accuracy}%</strong><small>WORLD AVG: 78%</small></article>
+                </div>
+
+                <div className="score-row">
+                  {players.map((p) => (
+                    <div key={p.user_id} className="score-chip"><span>{p.profile?.username ?? "Player"}</span><strong>{scores[p.user_id] ?? 0}</strong></div>
+                  ))}
+                </div>
+
+                <div className="victory-ctas">
+                  <button className="victory-play-btn" onClick={onRematchSameRoom}><RotateCcw size={17} /> REMATCH SAME ROOM</button>
+                  <button className="victory-menu-btn" onClick={() => navigate("/")}><Menu size={17} /> BACK TO HOME</button>
+                </div>
               </div>
-            ))}
-          </div>
-          <GameBoard state={roomState.state_json} onCardClick={onCardClick} />
-        </div>
-      )}
-
-      {room.status === "ended" && roomState && (
-        <div className="result-card glass-panel">
-          <h1>Match Finished</h1>
-          <p>Moves: {roomState.state_json.moves} | Time: {Math.max(1, Math.floor((new Date(roomState.state_json.ended_at ?? new Date().toISOString()).getTime() - new Date(roomState.state_json.started_at).getTime()) / 1000))}s</p>
-          <div className="score-row">
-            {players.map((p) => (
-              <div key={p.user_id} className="score-chip"><span>{p.profile?.username ?? "Player"}</span><strong>{scores[p.user_id] ?? 0}</strong></div>
-            ))}
-          </div>
-          <div className="result-actions">
-            <button className="primary-btn" onClick={onRematchSameRoom}>Rematch Same Room</button>
-            <button className="ghost-btn" onClick={() => navigate("/")}>Rematch (New Room)</button>
-          </div>
-        </div>
-      )}
+            </section>
+          </section>
+        )}
       </div>
     </ScreenShell>
   );

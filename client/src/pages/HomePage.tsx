@@ -1,18 +1,29 @@
-import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
+import { BarChart3, Cog, Play, Rocket, Server, User, UserRound, Users, UsersRound, X } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 import ScreenShell from "../components/ScreenShell";
 import { useAuth } from "../contexts/AuthContext";
 import { useConfig } from "../contexts/ConfigContext";
 import { createRoom } from "../lib/rooms";
+import type { BoardSizeId } from "../types";
+
+const boardTitles: Record<string, string> = {
+  "4x4": "Recruit",
+  "6x6": "Veteran",
+  "8x8": "Elite"
+};
 
 export default function HomePage() {
   const { profile, signOut } = useAuth();
   const { config } = useConfig();
-  const [boardSize, setBoardSize] = useState(config.boardSizes[0]?.id ?? "4x4");
+  const [showSetup, setShowSetup] = useState(false);
+  const [boardSize, setBoardSize] = useState<BoardSizeId>((config.boardSizes[0]?.id as BoardSizeId) ?? "4x4");
   const [theme, setTheme] = useState(config.themes[0]?.id ?? "neon");
   const [error, setError] = useState<string | null>(null);
   const [creating, setCreating] = useState(false);
   const navigate = useNavigate();
+
+  const selectedSize = config.boardSizes.find((b) => b.id === boardSize) ?? config.boardSizes[0];
 
   const onCreateRoom = async () => {
     setCreating(true);
@@ -27,44 +38,143 @@ export default function HomePage() {
     }
   };
 
+  if (showSetup) {
+    return (
+      <ScreenShell screenKey="setup" className="setup-screen glass-panel">
+        <header className="setup-header">
+          <div className="setup-title-wrap">
+            <span className="setup-icon"><BarChart3 size={19} /></span>
+            <div>
+              <h2>GAME CONFIGURATION</h2>
+              <p>SYSTEM READY // ONLINE MODE</p>
+            </div>
+          </div>
+          <button className="icon-square-btn" onClick={() => setShowSetup(false)}>
+            <X size={20} />
+          </button>
+        </header>
+
+        <section>
+          <h3 className="setup-label">1. SELECT MISSION TYPE</h3>
+          <div className="mission-grid">
+            <button className="mission-card">
+              <span className="mission-icon"><User size={20} /></span>
+              <strong>Solo Mission</strong>
+              <p>Offline practice</p>
+              <small>STANDBY</small>
+            </button>
+            <button className="mission-card selected">
+              <span className="mission-icon"><Users size={20} /></span>
+              <strong>Duo Duel</strong>
+              <p>Realtime 2 Players</p>
+              <small>ACTIVE</small>
+            </button>
+            <button className="mission-card">
+              <span className="mission-icon"><UsersRound size={20} /></span>
+              <strong>Squad Clash</strong>
+              <p>4 Players Local</p>
+              <small>STANDBY</small>
+            </button>
+          </div>
+        </section>
+
+        <section className="setup-split">
+          <div>
+            <h3 className="setup-label">2. COMPLEXITY LEVEL</h3>
+            <div className="level-list">
+              {config.boardSizes.map((size) => (
+                <button key={size.id} className={`level-row ${boardSize === size.id ? "selected" : ""}`} onClick={() => setBoardSize(size.id as BoardSizeId)}>
+                  <span className="radio-dot" />
+                  <div>
+                    <strong>{boardTitles[size.id] ?? size.label}</strong>
+                    <p>{size.rows} X {size.cols} GRID · {(size.rows * size.cols) / 2} PAIRS</p>
+                  </div>
+                  <span className="edge-notch" />
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <div>
+            <h3 className="setup-label">3. BOARD LAYOUT</h3>
+            <div className="board-preview-box">
+              <div className={`board-preview-grid grid-${boardSize.replace("x", "-")}`}>
+                {Array.from({ length: selectedSize ? selectedSize.rows * selectedSize.cols : 16 }).map((_, i) => (
+                  <span key={i} className={`preview-cell ${i % 7 === 0 ? "active" : ""}`} />
+                ))}
+              </div>
+              <p>THEME: {theme.toUpperCase()}</p>
+            </div>
+
+            <label className="setup-label" style={{ marginTop: 10, display: "block" }}>4. THEME PACK</label>
+            <select value={theme} onChange={(e) => setTheme(e.target.value)}>
+              {config.themes.map((t) => (
+                <option key={t.id} value={t.id}>{t.name}</option>
+              ))}
+            </select>
+          </div>
+        </section>
+
+        {error && <div className="error-pill">{error}</div>}
+
+        <footer className="setup-footer">
+          <button className="initialize-btn" onClick={onCreateRoom} disabled={creating}>
+            {creating ? "INITIALIZING..." : "INITIALIZE GAME"} <Rocket size={18} />
+          </button>
+          <button className="reset-btn" onClick={() => { setBoardSize("6x6"); setTheme(config.themes[0]?.id ?? "neon"); }}>RESET</button>
+        </footer>
+      </ScreenShell>
+    );
+  }
+
   return (
-    <ScreenShell screenKey="home" className="home-online glass-panel">
-      <header className="topbar">
-        <div>
-          <h1>Memory Match Online</h1>
-          <p>Realtime multiplayer via Supabase</p>
+    <ScreenShell screenKey="home" className="home-screen">
+      <header className="home-topbar">
+        <div className="status-chip">
+          <Server size={14} />
+          <div>
+            <p>SYSTEM STATUS</p>
+            <strong>ONLINE // SUPABASE REALTIME</strong>
+          </div>
         </div>
-        <div className="top-actions">
-          <Link className="ghost-btn" to="/profile">Profile</Link>
-          <button className="ghost-btn" onClick={() => void signOut()}>Logout</button>
+        <div className="home-secondary-actions">
+          <button className="secondary-neon-btn" onClick={() => navigate("/profile")}><UserRound size={16} />PROFILE</button>
+          <button className="secondary-neon-btn" onClick={() => void signOut()}><Cog size={16} />LOGOUT</button>
         </div>
       </header>
 
-      <section className="setup-grid">
-        <article className="glass-panel setup-box">
-          <h2>Create Room</h2>
-          <label>Board Size</label>
-          <select value={boardSize} onChange={(e) => setBoardSize(e.target.value as any)}>
-            {config.boardSizes.map((s) => (
-              <option key={s.id} value={s.id}>{s.label} ({s.rows}x{s.cols})</option>
-            ))}
-          </select>
-          <label>Theme</label>
-          <select value={theme} onChange={(e) => setTheme(e.target.value)}>
-            {config.themes.map((t) => (
-              <option key={t.id} value={t.id}>{t.name}</option>
-            ))}
-          </select>
-          {error && <div className="error-pill">{error}</div>}
-          <button className="primary-btn" onClick={onCreateRoom} disabled={creating}>{creating ? "Creating..." : "Create Invite Room"}</button>
-        </article>
+      <div className="home-center">
+        <div className="home-side-left">
+          <article className="home-stat-card"><span>GLOBAL RANK</span><strong>#1,242</strong></article>
+          <article className="home-stat-card"><span>ONLINE USER</span><strong>{profile?.username ?? "Player"}</strong></article>
+        </div>
 
-        <article className="glass-panel setup-box">
-          <h2>Welcome</h2>
-          <p>Logged in as <strong>{profile?.username ?? "Player"}</strong></p>
-          <p>Create a room, share the invite link, and play realtime with authoritative DB state.</p>
-        </article>
-      </section>
+        <section className="home-hero">
+          <p className="home-hero-tag">ULTRA HD EXPERIENCE</p>
+          <h1 className="home-title">
+            <span>NEON</span>
+            <em className="home-title-neon">MEMORY</em>
+          </h1>
+          <button className="play-now-btn" onClick={() => setShowSetup(true)}>
+            <Play size={18} fill="currentColor" />
+            PLAY NOW
+          </button>
+          <div className="home-secondary-actions">
+            <button className="secondary-neon-btn"><BarChart3 size={16} />LEADERBOARD</button>
+            <button className="secondary-neon-btn"><Cog size={16} />SETTINGS</button>
+          </div>
+        </section>
+
+        <div className="home-side-right">
+          <article className="home-stat-card"><span>HIGH SCORE</span><strong>98,420</strong></article>
+          <article className="home-stat-card"><span>CURRENT EVENT</span><strong>ONLINE DUEL</strong></article>
+        </div>
+      </div>
+
+      <footer className="home-footer">
+        <p>PATCH NOTES</p>
+        <p>SERVER: SUPABASE WS</p>
+      </footer>
     </ScreenShell>
   );
 }

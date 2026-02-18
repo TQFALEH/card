@@ -1,8 +1,7 @@
 import { useState } from "react";
-import { BarChart3, Cog, Play, Rocket, Server, User, UserRound, Users, UsersRound, X } from "lucide-react";
+import { BarChart3, Cog, Play, Rocket, User, Users, UsersRound, X } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import ScreenShell from "../components/ScreenShell";
-import { useAuth } from "../contexts/AuthContext";
 import { useConfig } from "../contexts/ConfigContext";
 import { createRoom } from "../lib/rooms";
 import type { BoardSizeId } from "../types";
@@ -14,7 +13,6 @@ const boardTitles: Record<string, string> = {
 };
 
 export default function HomePage() {
-  const { profile, signOut } = useAuth();
   const { config } = useConfig();
   const [showSetup, setShowSetup] = useState(false);
   const [boardSize, setBoardSize] = useState<BoardSizeId>((config.boardSizes[0]?.id as BoardSizeId) ?? "4x4");
@@ -149,26 +147,7 @@ export default function HomePage() {
 
   return (
     <ScreenShell screenKey="home" className="home-screen">
-      <header className="home-topbar">
-        <div className="status-chip">
-          <Server size={14} />
-          <div>
-            <p>SYSTEM STATUS</p>
-            <strong>ONLINE // SUPABASE REALTIME</strong>
-          </div>
-        </div>
-        <div className="home-secondary-actions">
-          <button className="secondary-neon-btn" onClick={() => navigate("/profile")}><UserRound size={16} />PROFILE</button>
-          <button className="secondary-neon-btn" onClick={() => void signOut()}><Cog size={16} />LOGOUT</button>
-        </div>
-      </header>
-
       <div className="home-center">
-        <div className="home-side-left">
-          <article className="home-stat-card"><span>GLOBAL RANK</span><strong>#1,242</strong></article>
-          <article className="home-stat-card"><span>ONLINE USER</span><strong>{profile?.username ?? "Player"}</strong></article>
-        </div>
-
         <section className="home-hero">
           <p className="home-hero-tag">ULTRA HD EXPERIENCE</p>
           <h1 className="home-title">

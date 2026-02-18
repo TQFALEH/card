@@ -61,6 +61,33 @@ p {
   place-items: center;
 }
 
+.lang-switcher {
+  position: fixed;
+  top: 10px;
+  inset-inline-end: 10px;
+  z-index: 50;
+  display: inline-flex;
+  border-radius: 999px;
+  overflow: hidden;
+  border: 1px solid rgba(0, 199, 255, 0.35);
+}
+
+.lang-switcher button {
+  border: 0;
+  background: rgba(4, 24, 35, 0.9);
+  color: #9ac0cf;
+  padding: 6px 10px;
+  font-size: 0.75rem;
+  letter-spacing: 0.1em;
+  cursor: pointer;
+}
+
+.lang-switcher button.active {
+  background: #2ac8f7;
+  color: #03131d;
+  font-weight: 700;
+}
+
 .animated-bg {
   position: absolute;
   inset: 0;
@@ -259,6 +286,21 @@ p {
   padding-top: 12px;
   display: flex;
   justify-content: space-between;
+}
+
+.app-root.rtl .home-footer,
+.app-root.rtl .home-topbar,
+.app-root.rtl .setup-header,
+.app-root.rtl .victory-topbar {
+  direction: rtl;
+}
+
+.app-root.rtl .setup-title-wrap,
+.app-root.rtl .victory-brand,
+.app-root.rtl .victory-top-actions,
+.app-root.rtl .home-secondary-actions,
+.app-root.rtl .reward-row {
+  direction: rtl;
 }
 
 .setup-screen {

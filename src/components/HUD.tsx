@@ -4,16 +4,18 @@ import type { Player } from "../core/types";
 interface HUDProps {
   players: Player[];
   currentPlayer: number;
+  title: string;
+  currentTurnLabel: string;
 }
 
-export default function HUD({ players, currentPlayer }: HUDProps) {
+export default function HUD({ players, currentPlayer, title, currentTurnLabel }: HUDProps) {
   return (
     <header className="match-hud-frame">
       <div className="match-hud-titleblock">
         <Cpu size={14} />
-        <span>MEMORY MATCH</span>
+        <span>{title}</span>
       </div>
-      <div className="turn-pill">CURRENT TURN: {players[currentPlayer]?.name ?? "P1"}</div>
+      <div className="turn-pill">{currentTurnLabel}: {players[currentPlayer]?.name ?? "P1"}</div>
       <div className="match-players-strip">
         {players.map((player) => (
           <article

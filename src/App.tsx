@@ -34,6 +34,7 @@ import {
   resolvePendingTurn
 } from "./core/gameEngine";
 import type { AIDifficulty, BoardPreset, GameConfig, GameMode, GameState, Screen } from "./core/types";
+type Language = "en" | "ar";
 
 const DEFAULT_MODE: GameMode = "solo";
 const DEFAULT_AI: AIDifficulty = "medium";
@@ -51,6 +52,157 @@ const DIFFICULTY_COPY: Record<AIDifficulty, string> = {
   hard: "BOT CORE: ELITE"
 };
 
+const COPY = {
+  en: {
+    home: {
+      systemStatus: "SYSTEM STATUS",
+      online: "ONLINE // V2.0.4",
+      ultra: "ULTRA HD EXPERIENCE",
+      playNow: "PLAY NOW",
+      leaderboard: "LEADERBOARD",
+      settings: "SETTINGS",
+      globalRank: "GLOBAL RANK",
+      totalWins: "TOTAL WINS",
+      highScore: "HIGH SCORE",
+      currentEvent: "CURRENT EVENT",
+      patchNotes: "PATCH NOTES",
+      server: "SERVER: US-EAST2"
+    },
+    victory: {
+      rank: "RANK",
+      grandmaster: "Grandmaster",
+      mission: "MISSION ACCOMPLISHED",
+      victory: "VICTORY",
+      mvp: "MVP",
+      leaderboard: "GLOBAL LEADERBOARD",
+      xpEarned: "XP EARNED",
+      levelText: "LEVEL 42 · 450 XP TO LEVEL 43",
+      moves: "MOVES",
+      time: "TIME",
+      accuracy: "ACCURACY",
+      best: "BEST",
+      avg: "AVG",
+      worldAvg: "WORLD AVG: 78%",
+      rewards: "MATCH REWARDS",
+      speedBadge: "Speed Demon Badge",
+      speedBadgeDesc: "Finish in under 02:00 minutes",
+      crystals: "50 Crystals",
+      crystalsDesc: "Reward for Perfect Accuracy streak",
+      playAgain: "PLAY AGAIN",
+      backToMenu: "BACK TO MENU"
+    },
+    setup: {
+      title: "GAME CONFIGURATION",
+      subtitle: "SYSTEM READY // MODE SELECTION",
+      missionType: "1. SELECT MISSION TYPE",
+      solo: "Solo Mission",
+      soloDesc: "Single Player Mode",
+      duo: "Duo Duel",
+      duoDesc: "2 Players Local",
+      squad: "Squad Clash",
+      squadDesc: "4 Players Local",
+      active: "ACTIVE",
+      standby: "STANDBY",
+      complexity: "2. COMPLEXITY LEVEL",
+      boardLayout: "3. BOARD LAYOUT",
+      preview: "PREVIEW MODE: ACTIVE",
+      initialize: "INITIALIZE GAME",
+      reset: "RESET",
+      recruit: "Recruit",
+      veteran: "Veteran",
+      elite: "Elite",
+      recruitSub: "4 X 4 GRID · 8 PAIRS",
+      veteranSub: "6 X 6 GRID · 18 PAIRS",
+      eliteSub: "8 X 8 GRID · 32 PAIRS",
+      botEasy: "BOT CORE: EASY",
+      botMedium: "BOT CORE: ADAPTIVE",
+      botHard: "BOT CORE: ELITE"
+    },
+    game: {
+      title: "MEMORY MATCH",
+      currentTurn: "CURRENT TURN",
+      sessionTime: "SESSION TIME",
+      totalMoves: "TOTAL MOVES",
+      settings: "Settings",
+      restart: "RESTART GAME"
+    }
+  },
+  ar: {
+    home: {
+      systemStatus: "حالة النظام",
+      online: "متصل // V2.0.4",
+      ultra: "تجربة فائقة الدقة",
+      playNow: "ابدأ الآن",
+      leaderboard: "لوحة الصدارة",
+      settings: "الإعدادات",
+      globalRank: "الترتيب العالمي",
+      totalWins: "إجمالي الانتصارات",
+      highScore: "أعلى نتيجة",
+      currentEvent: "الحدث الحالي",
+      patchNotes: "ملاحظات التحديث",
+      server: "الخادم: US-EAST2"
+    },
+    victory: {
+      rank: "الرتبة",
+      grandmaster: "جراند ماستر",
+      mission: "تم إنجاز المهمة",
+      victory: "انتصار",
+      mvp: "الأفضل",
+      leaderboard: "الترتيب العالمي",
+      xpEarned: "الخبرة المكتسبة",
+      levelText: "المستوى 42 · يتبقى 450 خبرة للمستوى 43",
+      moves: "الحركات",
+      time: "الوقت",
+      accuracy: "الدقة",
+      best: "الأفضل",
+      avg: "المتوسط",
+      worldAvg: "متوسط العالم: 78%",
+      rewards: "مكافآت المباراة",
+      speedBadge: "شارة السرعة",
+      speedBadgeDesc: "أنهِ المباراة خلال أقل من دقيقتين",
+      crystals: "50 كريستالة",
+      crystalsDesc: "مكافأة لسلسلة دقة مثالية",
+      playAgain: "العب مرة أخرى",
+      backToMenu: "العودة للقائمة"
+    },
+    setup: {
+      title: "إعدادات اللعبة",
+      subtitle: "النظام جاهز // اختيار النمط",
+      missionType: "1. اختر نوع المهمة",
+      solo: "مهمة فردية",
+      soloDesc: "نمط لاعب واحد",
+      duo: "مواجهة ثنائية",
+      duoDesc: "لاعبان محليًا",
+      squad: "صدام رباعي",
+      squadDesc: "أربعة لاعبين محليًا",
+      active: "نشط",
+      standby: "استعداد",
+      complexity: "2. مستوى الصعوبة",
+      boardLayout: "3. تخطيط اللوحة",
+      preview: "وضع المعاينة: نشط",
+      initialize: "تشغيل اللعبة",
+      reset: "إعادة ضبط",
+      recruit: "مبتدئ",
+      veteran: "محترف",
+      elite: "نخبة",
+      recruitSub: "شبكة 4 × 4 · 8 أزواج",
+      veteranSub: "شبكة 6 × 6 · 18 زوجًا",
+      eliteSub: "شبكة 8 × 8 · 32 زوجًا",
+      botEasy: "ذكاء اصطناعي: سهل",
+      botMedium: "ذكاء اصطناعي: متوسط",
+      botHard: "ذكاء اصطناعي: صعب"
+    },
+    game: {
+      title: "لعبة الذاكرة",
+      currentTurn: "الدور الحالي",
+      sessionTime: "وقت الجلسة",
+      totalMoves: "إجمالي الحركات",
+      settings: "الإعدادات",
+      restart: "إعادة بدء اللعبة"
+    }
+  }
+} as const;
+
 function formatDuration(ms: number): string {
   const totalSeconds = Math.floor(ms / 1000);
   const minutes = Math.floor(totalSeconds / 60)
@@ -66,6 +218,7 @@ function boardPreviewCells(board: BoardPreset): number {
 }
 
 export default function App() {
+  const [language, setLanguage] = useState<Language>("en");
   const [screen, setScreen] = useState<Screen>("home");
   const [mode, setMode] = useState<GameMode>(DEFAULT_MODE);
   const [difficulty, setDifficulty] = useState<AIDifficulty>(DEFAULT_AI);
@@ -77,6 +230,18 @@ export default function App() {
   const resolveTimeoutRef = useRef<number | null>(null);
   const aiTimeoutsRef = useRef<number[]>([]);
   const aiActionTokenRef = useRef<string>("");
+  const t = COPY[language];
+  const isArabic = language === "ar";
+  const boardLabels: Record<BoardPreset, { title: string; subtitle: string }> = {
+    "4x4": { title: t.setup.recruit, subtitle: t.setup.recruitSub },
+    "6x6": { title: t.setup.veteran, subtitle: t.setup.veteranSub },
+    "8x8": { title: t.setup.elite, subtitle: t.setup.eliteSub }
+  };
+  const difficultyCopy: Record<AIDifficulty, string> = {
+    easy: t.setup.botEasy,
+    medium: t.setup.botMedium,
+    hard: t.setup.botHard
+  };
 
   const stats = useMemo(() => (game ? getGameStats(game) : null), [game, now]);
 
@@ -221,17 +386,21 @@ export default function App() {
   }, []);
 
   return (
-    <main className="app-root">
+    <main className={`app-root ${isArabic ? "rtl" : ""}`} dir={isArabic ? "rtl" : "ltr"} lang={language}>
       <AnimatedBackground />
       <div className="app-shell">
+        <div className="lang-switcher glass-panel">
+          <button className={language === "en" ? "active" : ""} onClick={() => setLanguage("en")}>EN</button>
+          <button className={language === "ar" ? "active" : ""} onClick={() => setLanguage("ar")}>AR</button>
+        </div>
         {screen === "home" && (
           <ScreenShell screenKey="home" className="home-screen">
             <header className="home-topbar">
               <div className="status-chip">
                 <Server size={14} />
                 <div>
-                  <p>SYSTEM STATUS</p>
-                  <strong>ONLINE // V2.0.4</strong>
+                  <p>{t.home.systemStatus}</p>
+                  <strong>{t.home.online}</strong>
                 </div>
               </div>
               <div className="currency-pill">12,450 | 480</div>
@@ -239,35 +408,35 @@ export default function App() {
 
             <div className="home-center">
               <div className="home-side-left">
-                <article className="home-stat-card"><span>GLOBAL RANK</span><strong>#1,242</strong></article>
-                <article className="home-stat-card"><span>TOTAL WINS</span><strong>154</strong></article>
+                <article className="home-stat-card"><span>{t.home.globalRank}</span><strong>#1,242</strong></article>
+                <article className="home-stat-card"><span>{t.home.totalWins}</span><strong>154</strong></article>
               </div>
 
               <section className="home-hero">
-                <p className="home-hero-tag">ULTRA HD EXPERIENCE</p>
+                <p className="home-hero-tag">{t.home.ultra}</p>
                 <h1 className="home-title">
                   <span>NEON</span>
-                  <em className="home-title-neon">MEMORY</em>
+                  <em className="home-title-neon">{isArabic ? "الذاكرة" : "MEMORY"}</em>
                 </h1>
                 <button className="play-now-btn" onClick={() => setScreen("factory")}>
                   <Play size={18} fill="currentColor" />
-                  PLAY NOW
+                  {t.home.playNow}
                 </button>
                 <div className="home-secondary-actions">
-                  <button className="secondary-neon-btn"><BarChart3 size={16} />LEADERBOARD</button>
-                  <button className="secondary-neon-btn"><Cog size={16} />SETTINGS</button>
+                  <button className="secondary-neon-btn"><BarChart3 size={16} />{t.home.leaderboard}</button>
+                  <button className="secondary-neon-btn"><Cog size={16} />{t.home.settings}</button>
                 </div>
               </section>
 
               <div className="home-side-right">
-                <article className="home-stat-card"><span>HIGH SCORE</span><strong>98,420</strong></article>
-                <article className="home-stat-card"><span>CURRENT EVENT</span><strong>NEON SUMMER '24</strong></article>
+                <article className="home-stat-card"><span>{t.home.highScore}</span><strong>98,420</strong></article>
+                <article className="home-stat-card"><span>{t.home.currentEvent}</span><strong>NEON SUMMER '24</strong></article>
               </div>
             </div>
 
             <footer className="home-footer">
-              <p>PATCH NOTES</p>
-              <p>SERVER: US-EAST2</p>
+              <p>{t.home.patchNotes}</p>
+              <p>{t.home.server}</p>
             </footer>
           </ScreenShell>
         )}
@@ -282,70 +451,70 @@ export default function App() {
               <div className="victory-top-actions">
                 <button className="icon-square-btn"><Cog size={17} /></button>
                 <div className="rank-pill">
-                  <span>RANK</span>
-                  <strong>Grandmaster</strong>
+                  <span>{t.victory.rank}</span>
+                  <strong>{t.victory.grandmaster}</strong>
                 </div>
                 <span className="rank-avatar"><UserRound size={14} /></span>
               </div>
             </header>
 
             <section className="victory-hero">
-              <p>MISSION ACCOMPLISHED</p>
-              <h2>VICTORY</h2>
+              <p>{t.victory.mission}</p>
+              <h2>{t.victory.victory}</h2>
             </section>
 
             <section className="victory-main-grid">
               <article className="winner-panel glass-panel">
                 <div className="winner-avatar-ring">
                   <div className="winner-avatar-core">A</div>
-                  <span className="winner-badge">MVP</span>
+                  <span className="winner-badge">{t.victory.mvp}</span>
                 </div>
                 <h3>Alex Phoenix</h3>
-                <p>GLOBAL LEADERBOARD #14</p>
+                <p>{t.victory.leaderboard} #14</p>
                 <div className="xp-panel">
                   <div className="xp-row">
-                    <span>XP EARNED</span>
+                    <span>{t.victory.xpEarned}</span>
                     <strong>+2,450 XP</strong>
                   </div>
                   <div className="xp-bar"><span style={{ width: "86%" }} /></div>
-                  <small>LEVEL 42 · 450 XP TO LEVEL 43</small>
+                  <small>{t.victory.levelText}</small>
                 </div>
               </article>
 
               <div className="victory-right">
                 <div className="victory-stats-grid">
                   <article className="victory-stat-card glass-panel">
-                    <p><Zap size={13} /> MOVES</p>
+                    <p><Zap size={13} /> {t.victory.moves}</p>
                     <strong>18</strong>
-                    <small>BEST: 15</small>
+                    <small>{t.victory.best}: 15</small>
                   </article>
                   <article className="victory-stat-card glass-panel">
-                    <p><Timer size={13} /> TIME</p>
+                    <p><Timer size={13} /> {t.victory.time}</p>
                     <strong>01:42</strong>
-                    <small>AVG: 01:55</small>
+                    <small>{t.victory.avg}: 01:55</small>
                   </article>
                   <article className="victory-stat-card glass-panel">
-                    <p><Target size={13} /> ACCURACY</p>
+                    <p><Target size={13} /> {t.victory.accuracy}</p>
                     <strong>92%</strong>
-                    <small>WORLD AVG: 78%</small>
+                    <small>{t.victory.worldAvg}</small>
                   </article>
                 </div>
 
                 <article className="rewards-panel glass-panel">
-                  <h4>MATCH REWARDS</h4>
+                  <h4>{t.victory.rewards}</h4>
                   <div className="reward-row">
                     <span className="reward-icon"><BadgeCheck size={17} /></span>
                     <div>
-                      <strong>Speed Demon Badge</strong>
-                      <p>Finish in under 02:00 minutes</p>
+                      <strong>{t.victory.speedBadge}</strong>
+                      <p>{t.victory.speedBadgeDesc}</p>
                     </div>
                     <BadgeCheck className="reward-check" size={22} />
                   </div>
                   <div className="reward-row">
                     <span className="reward-icon"><Gem size={17} /></span>
                     <div>
-                      <strong>50 Crystals</strong>
-                      <p>Reward for Perfect Accuracy streak</p>
+                      <strong>{t.victory.crystals}</strong>
+                      <p>{t.victory.crystalsDesc}</p>
                     </div>
                     <BadgeCheck className="reward-check" size={22} />
                   </div>
@@ -353,10 +522,10 @@ export default function App() {
 
                 <div className="victory-ctas">
                   <button className="victory-play-btn" onClick={() => setScreen("mode")}>
-                    <RotateCcw size={17} /> PLAY AGAIN
+                    <RotateCcw size={17} /> {t.victory.playAgain}
                   </button>
                   <button className="victory-menu-btn" onClick={() => setScreen("home")}>
-                    <Menu size={17} /> BACK TO MENU
+                    <Menu size={17} /> {t.victory.backToMenu}
                   </button>
                 </div>
               </div>
@@ -370,8 +539,8 @@ export default function App() {
               <div className="setup-title-wrap">
                 <span className="setup-icon"><BarChart3 size={19} /></span>
                 <div>
-                  <h2>GAME CONFIGURATION</h2>
-                  <p>SYSTEM READY // MODE SELECTION</p>
+                  <h2>{t.setup.title}</h2>
+                  <p>{t.setup.subtitle}</p>
                 </div>
               </div>
               <button className="icon-square-btn" onClick={() => setScreen("factory")}>
@@ -380,32 +549,32 @@ export default function App() {
             </header>
 
             <section>
-              <h3 className="setup-label">1. SELECT MISSION TYPE</h3>
+              <h3 className="setup-label">{t.setup.missionType}</h3>
               <div className="mission-grid">
                 <button className={`mission-card ${mode === "solo" ? "selected" : ""}`} onClick={() => setMode("solo")}>
                   <span className="mission-icon"><User size={20} /></span>
-                  <strong>Solo Mission</strong>
-                  <p>Single Player Mode</p>
-                  <small>ACTIVE</small>
+                  <strong>{t.setup.solo}</strong>
+                  <p>{t.setup.soloDesc}</p>
+                  <small>{t.setup.active}</small>
                 </button>
                 <button className={`mission-card ${mode === "local2" ? "selected" : ""}`} onClick={() => setMode("local2")}>
                   <span className="mission-icon"><Users size={20} /></span>
-                  <strong>Duo Duel</strong>
-                  <p>2 Players Local</p>
-                  <small>{mode === "local2" ? "ACTIVE" : "STANDBY"}</small>
+                  <strong>{t.setup.duo}</strong>
+                  <p>{t.setup.duoDesc}</p>
+                  <small>{mode === "local2" ? t.setup.active : t.setup.standby}</small>
                 </button>
                 <button className={`mission-card ${mode === "local4" ? "selected" : ""}`} onClick={() => setMode("local4")}>
                   <span className="mission-icon"><UsersRound size={20} /></span>
-                  <strong>Squad Clash</strong>
-                  <p>4 Players Local</p>
-                  <small>{mode === "local4" ? "ACTIVE" : "STANDBY"}</small>
+                  <strong>{t.setup.squad}</strong>
+                  <p>{t.setup.squadDesc}</p>
+                  <small>{mode === "local4" ? t.setup.active : t.setup.standby}</small>
                 </button>
               </div>
             </section>
 
             <section className="setup-split">
               <div>
-                <h3 className="setup-label">2. COMPLEXITY LEVEL</h3>
+                <h3 className="setup-label">{t.setup.complexity}</h3>
                 <div className="level-list">
                   {(Object.keys(BOARD_SPECS) as BoardPreset[]).map((preset) => (
                     <button
@@ -415,8 +584,8 @@ export default function App() {
                     >
                       <span className="radio-dot" />
                       <div>
-                        <strong>{BOARD_LABELS[preset].title}</strong>
-                        <p>{BOARD_LABELS[preset].subtitle}</p>
+                        <strong>{boardLabels[preset].title}</strong>
+                        <p>{boardLabels[preset].subtitle}</p>
                       </div>
                       <span className="edge-notch" />
                     </button>
@@ -433,29 +602,29 @@ export default function App() {
                         {level.toUpperCase()}
                       </button>
                     ))}
-                    <span>{DIFFICULTY_COPY[difficulty]}</span>
+                    <span>{difficultyCopy[difficulty]}</span>
                   </div>
                 )}
               </div>
 
               <div>
-                <h3 className="setup-label">3. BOARD LAYOUT</h3>
+                <h3 className="setup-label">{t.setup.boardLayout}</h3>
                 <div className="board-preview-box">
                   <div className={`board-preview-grid grid-${board.replace("x", "-")}`}>
                     {Array.from({ length: boardPreviewCells(board) }).map((_, i) => (
                       <span key={i} className={`preview-cell ${i % 7 === 0 ? "active" : ""}`} />
                     ))}
                   </div>
-                  <p>PREVIEW MODE: ACTIVE</p>
+                  <p>{t.setup.preview}</p>
                 </div>
               </div>
             </section>
 
             <footer className="setup-footer">
               <button className="initialize-btn" onClick={startGame}>
-                INITIALIZE GAME <Rocket size={18} />
+                {t.setup.initialize} <Rocket size={18} />
               </button>
-              <button className="reset-btn" onClick={resetSetup}>RESET</button>
+              <button className="reset-btn" onClick={resetSetup}>{t.setup.reset}</button>
             </footer>
           </ScreenShell>
         )}
@@ -465,7 +634,12 @@ export default function App() {
 
         {screen === "game" && game && (
           <ScreenShell screenKey="game" className="arena-screen">
-            <HUD players={game.players} currentPlayer={game.currentPlayer} />
+            <HUD
+              players={game.players}
+              currentPlayer={game.currentPlayer}
+              title={t.game.title}
+              currentTurnLabel={t.game.currentTurn}
+            />
 
             <section className="arena-board-stage">
               <GameBoard state={game} onCardClick={onCardClick} />
@@ -473,18 +647,18 @@ export default function App() {
 
             <footer className="arena-footer-bar">
               <div className="arena-metric">
-                <span>SESSION TIME</span>
+                <span>{t.game.sessionTime}</span>
                 <strong>{formatDuration(stats?.elapsedMs ?? 0)}</strong>
               </div>
               <div className="arena-metric">
-                <span>TOTAL MOVES</span>
+                <span>{t.game.totalMoves}</span>
                 <strong>{stats?.moves ?? 0}</strong>
               </div>
               <button className="footer-control-btn" onClick={() => setScreen("mode")}>
-                <Cog size={16} /> Settings
+                <Cog size={16} /> {t.game.settings}
               </button>
               <button className="footer-main-btn" onClick={startGame}>
-                <RotateCcw size={16} /> RESTART GAME
+                <RotateCcw size={16} /> {t.game.restart}
               </button>
             </footer>
           </ScreenShell>
@@ -500,70 +674,70 @@ export default function App() {
               <div className="victory-top-actions">
                 <button className="icon-square-btn"><Cog size={17} /></button>
                 <div className="rank-pill">
-                  <span>RANK</span>
-                  <strong>Grandmaster</strong>
+                  <span>{t.victory.rank}</span>
+                  <strong>{t.victory.grandmaster}</strong>
                 </div>
                 <span className="rank-avatar"><UserRound size={14} /></span>
               </div>
             </header>
 
             <section className="victory-hero">
-              <p>MISSION ACCOMPLISHED</p>
-              <h2>VICTORY</h2>
+              <p>{t.victory.mission}</p>
+              <h2>{t.victory.victory}</h2>
             </section>
 
             <section className="victory-main-grid">
               <article className="winner-panel glass-panel">
                 <div className="winner-avatar-ring">
                   <div className="winner-avatar-core">{game.players[stats.winnerIds[0] ?? 0]?.name.slice(0, 1) ?? "P"}</div>
-                  <span className="winner-badge">MVP</span>
+                  <span className="winner-badge">{t.victory.mvp}</span>
                 </div>
-                <h3>{stats.winnerIds.length === 1 ? game.players[stats.winnerIds[0]].name : "Draw Match"}</h3>
-                <p>GLOBAL LEADERBOARD #{1200 + Math.max(1, stats.moves)}</p>
+                <h3>{stats.winnerIds.length === 1 ? game.players[stats.winnerIds[0]].name : (isArabic ? "تعادل" : "Draw Match")}</h3>
+                <p>{t.victory.leaderboard} #{1200 + Math.max(1, stats.moves)}</p>
                 <div className="xp-panel">
                   <div className="xp-row">
-                    <span>XP EARNED</span>
+                    <span>{t.victory.xpEarned}</span>
                     <strong>+{Math.max(850, Math.round((stats.accuracy + 30) * 22))} XP</strong>
                   </div>
                   <div className="xp-bar"><span style={{ width: `${Math.min(96, Math.round(stats.accuracy))}%` }} /></div>
-                  <small>LEVEL 42 · 450 XP TO LEVEL 43</small>
+                  <small>{t.victory.levelText}</small>
                 </div>
               </article>
 
               <div className="victory-right">
                 <div className="victory-stats-grid">
                   <article className="victory-stat-card glass-panel">
-                    <p><Zap size={13} /> MOVES</p>
+                    <p><Zap size={13} /> {t.victory.moves}</p>
                     <strong>{stats.moves}</strong>
-                    <small>BEST: {Math.max(8, stats.moves - 3)}</small>
+                    <small>{t.victory.best}: {Math.max(8, stats.moves - 3)}</small>
                   </article>
                   <article className="victory-stat-card glass-panel">
-                    <p><Timer size={13} /> TIME</p>
+                    <p><Timer size={13} /> {t.victory.time}</p>
                     <strong>{formatDuration(stats.elapsedMs)}</strong>
-                    <small>AVG: 01:55</small>
+                    <small>{t.victory.avg}: 01:55</small>
                   </article>
                   <article className="victory-stat-card glass-panel">
-                    <p><Target size={13} /> ACCURACY</p>
+                    <p><Target size={13} /> {t.victory.accuracy}</p>
                     <strong>{Math.round(stats.accuracy)}%</strong>
-                    <small>WORLD AVG: 78%</small>
+                    <small>{t.victory.worldAvg}</small>
                   </article>
                 </div>
 
                 <article className="rewards-panel glass-panel">
-                  <h4>MATCH REWARDS</h4>
+                  <h4>{t.victory.rewards}</h4>
                   <div className="reward-row">
                     <span className="reward-icon"><BadgeCheck size={17} /></span>
                     <div>
-                      <strong>Speed Demon Badge</strong>
-                      <p>Finish in under 02:00 minutes</p>
+                      <strong>{t.victory.speedBadge}</strong>
+                      <p>{t.victory.speedBadgeDesc}</p>
                     </div>
                     <BadgeCheck className="reward-check" size={22} />
                   </div>
                   <div className="reward-row">
                     <span className="reward-icon"><Gem size={17} /></span>
                     <div>
-                      <strong>50 Crystals</strong>
-                      <p>Reward for Perfect Accuracy streak</p>
+                      <strong>{t.victory.crystals}</strong>
+                      <p>{t.victory.crystalsDesc}</p>
                     </div>
                     <BadgeCheck className="reward-check" size={22} />
                   </div>
@@ -571,10 +745,10 @@ export default function App() {
 
                 <div className="victory-ctas">
                   <button className="victory-play-btn" onClick={startGame}>
-                    <RotateCcw size={17} /> PLAY AGAIN
+                    <RotateCcw size={17} /> {t.victory.playAgain}
                   </button>
                   <button className="victory-menu-btn" onClick={goHome}>
-                    <Menu size={17} /> BACK TO MENU
+                    <Menu size={17} /> {t.victory.backToMenu}
                   </button>
                 </div>
               </div>

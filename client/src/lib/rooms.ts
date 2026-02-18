@@ -1,6 +1,22 @@
 import { supabase } from "./supabase";
 import type { CanonicalState, Room, RoomPlayer, RoomStateRow } from "../types";
 
+function normalizeStateRpcResult(data: unknown): { state_json: CanonicalState; version: number } {
+  if (Array.isArray(data)) {
+    const row = data[0] as { state_json?: CanonicalState; version?: number } | undefined;
+    if (!row?.state_json || typeof row.version !== "number") {
+      throw new Error("Invalid room state response");
+    }
+    return { state_json: row.state_json, version: row.version };
+  }
+
+  const row = data as { state_json?: CanonicalState; version?: number } | null;
+  if (!row?.state_json || typeof row.version !== "number") {
+    throw new Error("Invalid room state response");
+  }
+  return { state_json: row.state_json, version: row.version };
+}
+
 export async function createRoom(boardSize: string, theme: string) {
   const { data, error } = await supabase.rpc("create_room", { p_board_size: boardSize, p_theme: theme });
   if (error) throw error;
@@ -64,7 +80,7 @@ export async function flipCard(roomId: string, index: number, expectedVersion: n
     p_expected_version: expectedVersion
   });
   if (error) throw error;
-  return data as { state_json: CanonicalState; version: number };
+  return normalizeStateRpcResult(data);
 }
 
 export async function resolvePending(roomId: string, expectedVersion: number) {
@@ -73,7 +89,7 @@ export async function resolvePending(roomId: string, expectedVersion: number) {
     p_expected_version: expectedVersion
   });
   if (error) throw error;
-  return data as { state_json: CanonicalState; version: number };
+  return normalizeStateRpcResult(data);
 }
 
 export async function rematchRoom(roomId: string) {

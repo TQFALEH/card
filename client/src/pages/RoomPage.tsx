@@ -70,20 +70,46 @@ export default function RoomPage() {
     }, 2500);
   };
 
-  const refresh = async () => {
-    if (!roomId) return;
-    const [nextRoom, nextPlayers, nextState] = await Promise.all([fetchRoom(roomId), fetchPlayers(roomId), fetchState(roomId)]);
-    setRoom(nextRoom);
-    setPlayers(nextPlayers);
-    setRoomState(nextState);
+  const refresh = async (): Promise<boolean> => {
+    if (!roomId) return false;
+    try {
+      const [nextRoom, nextPlayers, nextState] = await Promise.all([fetchRoom(roomId), fetchPlayers(roomId), fetchState(roomId)]);
+      setRoom(nextRoom);
+      setPlayers(nextPlayers);
+      setRoomState(nextState);
+      return true;
+    } catch {
+      return false;
+    }
   };
 
   useEffect(() => {
     if (!user || !roomId) return;
-    void joinRoom(roomId).catch(() => {
-      addToast("Room full or inaccessible");
-      navigate("/");
-    });
+    let active = true;
+    void (async () => {
+      try {
+        await joinRoom(roomId);
+      } catch {
+        const ok = await refresh();
+        if (!active) return;
+        let isAlreadyMember = false;
+        if (ok) {
+          try {
+            const currentPlayers = await fetchPlayers(roomId);
+            isAlreadyMember = currentPlayers.some((p) => p.user_id === user.id);
+          } catch {
+            isAlreadyMember = false;
+          }
+        }
+        if (!isAlreadyMember) {
+          addToast("Room full or inaccessible");
+          navigate("/");
+        }
+      }
+    })();
+    return () => {
+      active = false;
+    };
   }, [user?.id, roomId]);
 
   useEffect(() => {

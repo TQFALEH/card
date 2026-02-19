@@ -5,7 +5,9 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 import MemoryCard from "../components/MemoryCard";
 import ScreenShell from "../components/ScreenShell";
 import { iconPool, tintPalette } from "../core/icons";
+import { useAuth } from "../contexts/AuthContext";
 import { useSound } from "../contexts/SoundContext";
+import { saveSoloMatch } from "../lib/social";
 
 type BotLevel = "easy" | "medium" | "hard";
 type Turn = "player" | "bot";
@@ -109,6 +111,7 @@ function formatDuration(ms: number): string {
 
 export default function SoloPage() {
   const navigate = useNavigate();
+  const { user, profile } = useAuth();
   const [params] = useSearchParams();
   const boardSize = params.get("size") ?? "6x6";
   const botLevel = ((params.get("bot") ?? "medium").toLowerCase() as BotLevel);
@@ -122,6 +125,7 @@ export default function SoloPage() {
   const botPlannedPairRef = useRef<[number, number] | null>(null);
   const resolveTimerRef = useRef<number | null>(null);
   const botStepTimerRef = useRef<number | null>(null);
+  const savedMatchRef = useRef<string | null>(null);
   const { play, setMusicMode } = useSound();
   const shellRef = useRef<HTMLDivElement | null>(null);
 
@@ -148,6 +152,26 @@ export default function SoloPage() {
   useEffect(() => {
     setMusicMode(game.status === "ended" ? "victory" : "game");
   }, [game.status, setMusicMode]);
+
+  useEffect(() => {
+    if (!user || game.status !== "ended" || !game.endedAt) return;
+    if (savedMatchRef.current === `${game.startedAt}`) return;
+    savedMatchRef.current = `${game.startedAt}`;
+    saveSoloMatch({
+      user,
+      username: profile?.username ?? "Player",
+      boardSize,
+      theme: "neon",
+      startedAt: game.startedAt,
+      endedAt: game.endedAt,
+      moves: game.moves,
+      attempts: game.attempts,
+      matchedPairs: game.matchedPairs,
+      playerScore: game.scores.player,
+      botScore: game.scores.bot,
+      winner: game.scores.player === game.scores.bot ? "draw" : game.scores.player > game.scores.bot ? "player" : "bot"
+    });
+  }, [user?.id, profile?.username, game.status, game.endedAt, game.startedAt, game.moves, game.attempts, game.matchedPairs, game.scores.player, game.scores.bot, boardSize]);
 
   useEffect(() => {
     return () => {
@@ -342,6 +366,7 @@ export default function SoloPage() {
     seenOrderRef.current = [];
     botPlannedPairRef.current = null;
     setBotThinking(false);
+    savedMatchRef.current = null;
     play("start", 0.9);
     commit(createGame(boardSize));
   };

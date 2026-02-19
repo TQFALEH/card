@@ -16,7 +16,7 @@ import { useNavigate } from "react-router-dom";
 import ScreenShell from "../components/ScreenShell";
 import { iconPool } from "../core/icons";
 import { useAuth } from "../contexts/AuthContext";
-import { getMatchById, listMyMatches } from "../lib/social";
+import { getMatchById, listMyMatches, listSoloMatchesForUser } from "../lib/social";
 import type { MatchRow } from "../types";
 
 function hashSeed(text: string): number {
@@ -53,18 +53,34 @@ export default function HistoryPage() {
 
   useEffect(() => {
     if (!user) return;
-    void listMyMatches(user.id).then((rows) => {
-      setMatches(rows);
-      const first = rows[0] ?? null;
-      setSelectedId(first?.match_id ?? null);
-      setSelected(first);
-    });
+    void listMyMatches(user.id)
+      .then((rows) => {
+        const all = [...rows, ...listSoloMatchesForUser(user.id)].sort(
+          (a, b) => new Date(b.ended_at).getTime() - new Date(a.ended_at).getTime()
+        );
+        setMatches(all);
+        const first = all[0] ?? null;
+        setSelectedId(first?.match_id ?? null);
+        setSelected(first);
+      })
+      .catch(() => {
+        const local = listSoloMatchesForUser(user.id);
+        setMatches(local);
+        const first = local[0] ?? null;
+        setSelectedId(first?.match_id ?? null);
+        setSelected(first);
+      });
   }, [user?.id]);
 
   useEffect(() => {
     if (!selectedId) return;
+    if (selectedId.startsWith("solo-")) {
+      const local = matches.find((m) => m.match_id === selectedId) ?? null;
+      if (local) setSelected(local);
+      return;
+    }
     void getMatchById(selectedId).then((row) => row && setSelected(row));
-  }, [selectedId]);
+  }, [selectedId, matches]);
 
   const model = useMemo(() => {
     if (!selected || !user) return null;

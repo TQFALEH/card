@@ -29,7 +29,8 @@ import {
   rematchRoom,
   resolvePending,
   setReady,
-  tryStart
+  tryStart,
+  updateRoomSettings
 } from "../lib/rooms";
 import { finalizeMatch } from "../lib/social";
 import { supabase } from "../lib/supabase";
@@ -59,6 +60,8 @@ export default function RoomPage() {
   const [onlineIds, setOnlineIds] = useState<string[]>([]);
   const [reconnecting, setReconnecting] = useState(false);
   const [toasts, setToasts] = useState<Toast[]>([]);
+  const [lobbyBoardSize, setLobbyBoardSize] = useState<string>("6x6");
+  const [lobbyTheme, setLobbyTheme] = useState<string>("neon");
   const channelRef = useRef<RealtimeChannel | null>(null);
   const screenRef = useRef<HTMLDivElement | null>(null);
 
@@ -258,6 +261,24 @@ export default function RoomPage() {
     await refresh();
   };
 
+  useEffect(() => {
+    if (!room) return;
+    setLobbyBoardSize(room.board_size);
+    setLobbyTheme(room.theme);
+  }, [room?.board_size, room?.theme, room?.room_id]);
+
+  const onUpdateRoomSettings = async () => {
+    if (!room) return;
+    try {
+      await updateRoomSettings(room.room_id, lobbyBoardSize, lobbyTheme);
+      await channelRef.current?.send({ type: "broadcast", event: "state_updated", payload: { settings: true } });
+      addToast("Room settings updated");
+      await refresh();
+    } catch (err: any) {
+      addToast(err?.message ?? "Failed to update settings");
+    }
+  };
+
   const onCopyInvite = async () => {
     if (!roomId) return;
     const appUrl = import.meta.env.VITE_APP_URL || window.location.origin;
@@ -357,6 +378,25 @@ export default function RoomPage() {
                 </article>
               </div>
             </section>
+
+            {room.host_id === user?.id && (
+              <section>
+                <h3 className="setup-label">HOST SETTINGS</h3>
+                <div className="friends-config-row">
+                  <select value={lobbyBoardSize} onChange={(e) => setLobbyBoardSize(e.target.value)}>
+                    <option value="4x4">4x4</option>
+                    <option value="6x6">6x6</option>
+                    <option value="8x8">8x8</option>
+                  </select>
+                  <select value={lobbyTheme} onChange={(e) => setLobbyTheme(e.target.value)}>
+                    <option value="neon">Neon</option>
+                  </select>
+                </div>
+                <div style={{ marginTop: 10 }}>
+                  <button className="ghost-btn" onClick={onUpdateRoomSettings}>Apply Settings</button>
+                </div>
+              </section>
+            )}
 
             <section>
               <h3 className="setup-label">2. PLAYERS</h3>

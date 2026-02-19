@@ -38,6 +38,15 @@ export async function tryStart(roomId: string) {
   if (error) throw error;
 }
 
+export async function updateRoomSettings(roomId: string, boardSize: string, theme: string) {
+  const { error } = await supabase.rpc("update_room_settings", {
+    p_room_id: roomId,
+    p_board_size: boardSize,
+    p_theme: theme
+  });
+  if (error) throw error;
+}
+
 export async function fetchRoom(roomId: string): Promise<Room | null> {
   const { data, error } = await supabase.from("rooms").select("*").eq("room_id", roomId).maybeSingle();
   if (error) throw error;

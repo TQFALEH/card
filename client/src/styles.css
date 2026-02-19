@@ -1883,6 +1883,29 @@ p {
     grid-template-columns: 1fr 1fr;
   }
 
+  .debrief-topbar,
+  .debrief-actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .debrief-hero-grid,
+  .debrief-mid-grid,
+  .debrief-kpi-grid,
+  .debrief-ach-grid,
+  .debrief-history-list {
+    grid-template-columns: 1fr;
+  }
+
+  .debrief-grade-ring {
+    width: 130px;
+    height: 130px;
+  }
+
+  .debrief-score-box h3 {
+    font-size: 2.4rem;
+  }
+
   .auth-card {
     padding: 20px 16px;
     gap: 16px;
@@ -2294,6 +2317,326 @@ p {
   display: flex;
   align-items: center;
   justify-content: space-between;
+}
+
+.debrief-screen {
+  width: min(1160px, 100%);
+  display: grid;
+  gap: 12px;
+}
+
+.debrief-topbar {
+  border-radius: 14px;
+  padding: 12px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.debrief-brand {
+  display: inline-flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.debrief-brand p {
+  color: #27c9f7;
+  letter-spacing: 0.14em;
+  font-size: 0.7rem;
+}
+
+.debrief-brand h2 {
+  font-size: 2rem;
+}
+
+.debrief-actions {
+  display: inline-flex;
+  gap: 8px;
+}
+
+.debrief-hero-grid {
+  display: grid;
+  grid-template-columns: 0.78fr 1.22fr;
+  gap: 12px;
+}
+
+.debrief-rank-box {
+  border: 1px solid rgba(26, 126, 164, 0.42);
+  border-radius: 14px;
+  padding: 12px;
+  background: rgba(3, 26, 37, 0.58);
+  display: grid;
+  align-content: start;
+  gap: 10px;
+}
+
+.debrief-grade-ring {
+  width: 170px;
+  height: 170px;
+  border-radius: 50%;
+  border: 3px solid rgba(38, 210, 255, 0.48);
+  box-shadow: 0 0 26px rgba(37, 202, 248, 0.24);
+  display: grid;
+  place-items: center;
+}
+
+.debrief-grade-ring span {
+  font-size: 4rem;
+  color: #30d4ff;
+  font-weight: 800;
+}
+
+.debrief-rank-box h3 {
+  font-size: 2rem;
+  line-height: 1.1;
+}
+
+.debrief-rank-box p {
+  color: #2ad1ff;
+  letter-spacing: 0.08em;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+}
+
+.debrief-score-box {
+  border-radius: 14px;
+  padding: 14px;
+  display: grid;
+  gap: 8px;
+}
+
+.debrief-score-box > p {
+  letter-spacing: 0.17em;
+  color: #31ccf8;
+  font-size: 0.8rem;
+}
+
+.debrief-score-box h3 {
+  font-size: 4rem;
+}
+
+.debrief-score-box h3 span {
+  font-size: 1.2rem;
+  color: #7ea7ba;
+}
+
+.debrief-xp-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.debrief-xp-row span {
+  color: #b6d9e6;
+  letter-spacing: 0.08em;
+  font-size: 0.9rem;
+}
+
+.debrief-xp-row strong {
+  color: #3dd6ff;
+}
+
+.debrief-score-box small {
+  color: #6a91a3;
+  justify-self: end;
+}
+
+.debrief-kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.debrief-kpi {
+  border-radius: 12px;
+  padding: 12px;
+  border: 1px solid rgba(36, 143, 181, 0.42);
+}
+
+.debrief-kpi p {
+  color: #7ea8bc;
+  letter-spacing: 0.12em;
+  font-size: 0.8rem;
+}
+
+.debrief-kpi strong {
+  font-size: 2.8rem;
+}
+
+.debrief-mid-grid {
+  display: grid;
+  grid-template-columns: 1.45fr 0.7fr;
+  gap: 12px;
+}
+
+.debrief-chart-card,
+.debrief-board-card {
+  border-radius: 14px;
+  padding: 12px;
+  display: grid;
+  gap: 10px;
+}
+
+.debrief-chart-card h4,
+.debrief-board-card h4,
+.debrief-achievements h4,
+.debrief-history-rail h4 {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  letter-spacing: 0.08em;
+}
+
+.debrief-chart-svg {
+  width: 100%;
+  height: auto;
+  border: 1px solid rgba(29, 114, 147, 0.35);
+  border-radius: 10px;
+  background: linear-gradient(180deg, rgba(4, 31, 43, 0.72), rgba(4, 22, 31, 0.72));
+}
+
+.debrief-chart-svg line {
+  stroke: rgba(46, 138, 168, 0.3);
+  stroke-width: 1;
+}
+
+.debrief-chart-svg path {
+  fill: none;
+  stroke: #2ad0ff;
+  stroke-width: 4;
+  stroke-linecap: round;
+}
+
+.debrief-chart-axis {
+  display: flex;
+  justify-content: space-between;
+  color: #6d97aa;
+  font-size: 0.7rem;
+}
+
+.debrief-final-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.debrief-final-grid span {
+  border: 1px solid rgba(34, 129, 163, 0.5);
+  background: rgba(7, 43, 58, 0.74);
+  border-radius: 8px;
+  min-height: 54px;
+  display: grid;
+  place-items: center;
+  color: #34d4ff;
+}
+
+.debrief-achievements {
+  border-radius: 14px;
+  padding: 12px;
+  display: grid;
+  gap: 10px;
+}
+
+.debrief-ach-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.debrief-ach-item {
+  border: 1px solid rgba(36, 123, 155, 0.45);
+  border-radius: 10px;
+  background: rgba(4, 27, 39, 0.68);
+  padding: 10px;
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 8px;
+  align-items: center;
+}
+
+.debrief-ach-item.locked {
+  opacity: 0.5;
+}
+
+.debrief-ach-icon {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  border: 1px solid rgba(42, 190, 231, 0.5);
+  display: grid;
+  place-items: center;
+  color: #33d0fe;
+}
+
+.debrief-ach-item strong {
+  font-size: 1rem;
+  letter-spacing: 0.06em;
+}
+
+.debrief-ach-item p {
+  color: #799fb1;
+  font-size: 0.78rem;
+}
+
+.debrief-history-rail {
+  border-radius: 14px;
+  padding: 12px;
+  display: grid;
+  gap: 10px;
+}
+
+.debrief-history-list {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.debrief-history-chip {
+  border: 1px solid rgba(35, 119, 151, 0.46);
+  border-radius: 10px;
+  background: rgba(4, 29, 41, 0.82);
+  min-height: 62px;
+  text-align: left;
+  padding: 8px;
+  display: grid;
+  align-content: center;
+}
+
+.debrief-history-chip.selected {
+  border-color: #2ad2ff;
+  box-shadow: 0 0 14px rgba(37, 203, 248, 0.24);
+}
+
+.debrief-history-chip span {
+  color: #2ccffe;
+  font-size: 0.72rem;
+}
+
+.debrief-history-chip strong {
+  font-size: 1.02rem;
+}
+
+.debrief-history-chip small {
+  color: #7e9eb0;
+  font-size: 0.68rem;
+}
+
+.debrief-footer-id {
+  text-align: center;
+  color: #6e95a8;
+  letter-spacing: 0.2em;
+  font-size: 0.7rem;
+}
+
+.history-empty-box {
+  width: min(520px, 100%);
+  margin: 0 auto;
+  border-radius: 14px;
+  padding: 20px;
+  display: grid;
+  justify-items: center;
+  gap: 10px;
 }
 
 .setup-box select,

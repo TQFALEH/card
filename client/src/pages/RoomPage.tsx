@@ -69,7 +69,7 @@ export default function RoomPage() {
   const opponent = useMemo(() => players.find((p) => p.user_id !== user?.id), [players, user?.id]);
   const scores = roomState?.state_json.scores ?? {};
   const winner = roomState ? [...players].sort((a, b) => (scores[b.user_id] ?? 0) - (scores[a.user_id] ?? 0))[0] : null;
-  const { play } = useSound();
+  const { play, setMusicMode } = useSound();
   const { announce } = usePresence();
   const prevStatusRef = useRef<Room["status"] | null>(null);
   const finalizedRef = useRef<string | null>(null);
@@ -237,6 +237,10 @@ export default function RoomPage() {
 
   useEffect(() => {
     if (!room?.status) return;
+    if (room.status === "ended") setMusicMode("victory");
+    else if (room.status === "playing") setMusicMode("game");
+    else setMusicMode("menu");
+
     const prev = prevStatusRef.current;
     if (prev && prev !== room.status) {
       if (room.status === "ended") play("victory");

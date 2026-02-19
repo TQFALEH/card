@@ -1,4 +1,5 @@
 import { Navigate, Route, BrowserRouter as Router, Routes, useLocation } from "react-router-dom";
+import { useEffect } from "react";
 import AnimatedBackground from "./components/AnimatedBackground";
 import { useAuth } from "./contexts/AuthContext";
 import { useSound } from "./contexts/SoundContext";
@@ -22,6 +23,22 @@ function Protected({ children }: { children: JSX.Element }) {
   return children;
 }
 
+function MusicRouteSync() {
+  const location = useLocation();
+  const { setMusicMode } = useSound();
+
+  useEffect(() => {
+    const path = location.pathname;
+    if (path.startsWith("/room/") || path.startsWith("/solo")) {
+      setMusicMode("game");
+      return;
+    }
+    setMusicMode("menu");
+  }, [location.pathname, setMusicMode]);
+
+  return null;
+}
+
 export default function App() {
   const { muted, toggleMute } = useSound();
 
@@ -32,6 +49,7 @@ export default function App() {
         <button className="sound-fab" onClick={toggleMute} title={muted ? "Unmute" : "Mute"}>
           {muted ? <VolumeX size={16} /> : <Volume2 size={16} />}
         </button>
+        <MusicRouteSync />
         <InviteInbox />
         <div className="app-shell">
           <Routes>

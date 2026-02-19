@@ -122,7 +122,7 @@ export default function SoloPage() {
   const botPlannedPairRef = useRef<[number, number] | null>(null);
   const resolveTimerRef = useRef<number | null>(null);
   const botStepTimerRef = useRef<number | null>(null);
-  const { play } = useSound();
+  const { play, setMusicMode } = useSound();
   const shellRef = useRef<HTMLDivElement | null>(null);
 
   const elapsed = game.status === "ended" && game.endedAt ? game.endedAt - game.startedAt : Date.now() - game.startedAt;
@@ -144,6 +144,10 @@ export default function SoloPage() {
     if (game.status !== "playing" || game.current !== "bot" || game.inputLocked) return;
     runBotTurn();
   }, [game.current, game.status, game.inputLocked, tick]);
+
+  useEffect(() => {
+    setMusicMode(game.status === "ended" ? "victory" : "game");
+  }, [game.status, setMusicMode]);
 
   useEffect(() => {
     return () => {

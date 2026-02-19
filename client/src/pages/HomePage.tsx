@@ -17,6 +17,8 @@ export default function HomePage() {
   const { profile } = useAuth();
   const { config } = useConfig();
   const [showSetup, setShowSetup] = useState(false);
+  const [mode, setMode] = useState<"solo" | "duo">("duo");
+  const [botLevel, setBotLevel] = useState<"easy" | "medium" | "hard">("medium");
   const [boardSize, setBoardSize] = useState<BoardSizeId>((config.boardSizes[0]?.id as BoardSizeId) ?? "4x4");
   const [theme, setTheme] = useState(config.themes[0]?.id ?? "neon");
   const [error, setError] = useState<string | null>(null);
@@ -27,6 +29,10 @@ export default function HomePage() {
   const selectedSize = config.boardSizes.find((b) => b.id === boardSize) ?? config.boardSizes[0];
 
   const onCreateRoom = async () => {
+    if (mode === "solo") {
+      navigate(`/solo?size=${boardSize}&bot=${botLevel}`);
+      return;
+    }
     setCreating(true);
     setError(null);
     try {
@@ -67,17 +73,17 @@ export default function HomePage() {
         <section>
           <h3 className="setup-label">1. SELECT MISSION TYPE</h3>
           <div className="mission-grid">
-            <button className="mission-card">
+            <button className={`mission-card ${mode === "solo" ? "selected" : ""}`.trim()} onClick={() => setMode("solo")}>
               <span className="mission-icon"><User size={20} /></span>
               <strong>Solo Mission</strong>
-              <p>Offline practice</p>
-              <small>STANDBY</small>
+              <p>Player vs Smart Bot</p>
+              <small>{mode === "solo" ? "ACTIVE" : "STANDBY"}</small>
             </button>
-            <button className="mission-card selected">
+            <button className={`mission-card ${mode === "duo" ? "selected" : ""}`.trim()} onClick={() => setMode("duo")}>
               <span className="mission-icon"><Users size={20} /></span>
               <strong>Duo Duel</strong>
               <p>Realtime 2 Players</p>
-              <small>ACTIVE</small>
+              <small>{mode === "duo" ? "ACTIVE" : "STANDBY"}</small>
             </button>
             <button className="mission-card">
               <span className="mission-icon"><UsersRound size={20} /></span>
@@ -123,15 +129,28 @@ export default function HomePage() {
               ))}
             </select>
 
-            <label className="setup-label" style={{ marginTop: 14, display: "block" }}>5. JOIN BY CODE</label>
-            <div className="join-by-code">
-              <input
-                placeholder="Paste room code (UUID)"
-                value={joinCode}
-                onChange={(e) => setJoinCode(e.target.value)}
-              />
-              <button className="ghost-btn" onClick={onJoinRoom}>JOIN ROOM</button>
-            </div>
+            {mode === "solo" ? (
+              <>
+                <label className="setup-label" style={{ marginTop: 14, display: "block" }}>5. BOT DIFFICULTY</label>
+                <div className="bot-difficulty-row">
+                  <button className={`bot-btn ${botLevel === "easy" ? "selected" : ""}`.trim()} onClick={() => setBotLevel("easy")}>EASY</button>
+                  <button className={`bot-btn ${botLevel === "medium" ? "selected" : ""}`.trim()} onClick={() => setBotLevel("medium")}>MEDIUM</button>
+                  <button className={`bot-btn ${botLevel === "hard" ? "selected" : ""}`.trim()} onClick={() => setBotLevel("hard")}>HARD</button>
+                </div>
+              </>
+            ) : (
+              <>
+                <label className="setup-label" style={{ marginTop: 14, display: "block" }}>5. JOIN BY CODE</label>
+                <div className="join-by-code">
+                  <input
+                    placeholder="Paste room code (UUID)"
+                    value={joinCode}
+                    onChange={(e) => setJoinCode(e.target.value)}
+                  />
+                  <button className="ghost-btn" onClick={onJoinRoom}>JOIN ROOM</button>
+                </div>
+              </>
+            )}
           </div>
         </section>
 
@@ -139,7 +158,7 @@ export default function HomePage() {
 
         <footer className="setup-footer">
           <button className="initialize-btn" onClick={onCreateRoom} disabled={creating}>
-            {creating ? "INITIALIZING..." : "INITIALIZE GAME"} <Rocket size={18} />
+            {creating ? "INITIALIZING..." : mode === "solo" ? "START SOLO GAME" : "INITIALIZE GAME"} <Rocket size={18} />
           </button>
           <button className="reset-btn" onClick={() => { setBoardSize("6x6"); setTheme(config.themes[0]?.id ?? "neon"); }}>RESET</button>
         </footer>

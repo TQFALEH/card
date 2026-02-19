@@ -9,6 +9,7 @@ import HomePage from "./pages/HomePage";
 import JoinPage from "./pages/JoinPage";
 import ProfilePage from "./pages/ProfilePage";
 import RoomPage from "./pages/RoomPage";
+import SoloPage from "./pages/SoloPage";
 import { Volume2, VolumeX } from "lucide-react";
 import InviteInbox from "./components/InviteInbox";
 
@@ -37,6 +38,7 @@ export default function App() {
             <Route path="/auth" element={<AuthPage />} />
             <Route path="/join/:roomId" element={<JoinPage />} />
             <Route path="/" element={<Protected><HomePage /></Protected>} />
+            <Route path="/solo" element={<Protected><SoloPage /></Protected>} />
             <Route path="/friends" element={<Protected><FriendsPage /></Protected>} />
             <Route path="/history" element={<Protected><HistoryPage /></Protected>} />
             <Route path="/profile" element={<Protected><ProfilePage /></Protected>} />

@@ -1,5 +1,5 @@
 import { gsap } from "gsap";
-import { Bell, Check, Clock3, MessageCircle, MoreVertical, Search, Send, ShieldBan, Slash, UserPlus, Users, X } from "lucide-react";
+import { Bell, Check, Clock3, Search, Send, ShieldBan, UserPlus, X } from "lucide-react";
 import { useEffect, useLayoutEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import ScreenShell from "../components/ScreenShell";
@@ -130,125 +130,101 @@ export default function FriendsPage() {
   };
 
   return (
-    <ScreenShell screenKey="friends" className="noir-friends-page">
-      <header className="friends-head friends-panel glass-panel noir-friends-header">
-        <div className="friends-brand">
-          <Users size={18} />
-          <h2>Nexus Friends</h2>
-        </div>
+    <ScreenShell screenKey="friends" className="friends-screen">
+      <header className="friends-head friends-panel glass-panel">
+        <h2>Friends & Invites</h2>
         <div className="friends-top-actions">
-          <label className="noir-search-pill">
-            <Search size={14} />
-            <input value={search} placeholder="Search friends..." onChange={(e) => setSearch(e.target.value)} />
-          </label>
-          <button className="icon-square-btn" onClick={onSend} disabled={busy}><UserPlus size={15} /></button>
-          <button className="icon-square-btn"><Bell size={14} /></button>
+          <button className={`secondary-neon-btn ${tab === "friends" ? "selected" : ""}`} onClick={() => setTab("friends")}><UserPlus size={16} /> Friends</button>
+          <button className={`secondary-neon-btn ${tab === "requests" ? "selected" : ""}`} onClick={() => setTab("requests")}><Bell size={16} /> Requests</button>
+          <button className="secondary-neon-btn" onClick={() => navigate("/")}>Back</button>
         </div>
       </header>
 
-      <section className="noir-friends-body">
-        <aside className="friends-panel glass-panel noir-friends-left">
-          <button className={`friend-filter-row ${tab === "friends" ? "active" : ""}`} onClick={() => setTab("friends")}><UserPlus size={15} /> Online <span>{accepted.length}</span></button>
-          <button className="friend-filter-row"><Slash size={15} /> Offline <span>{Math.max(0, accepted.length - onlineIds.size)}</span></button>
-          <button className={`friend-filter-row ${tab === "requests" ? "active" : ""}`} onClick={() => setTab("requests")}><Bell size={15} /> Requests <span>{incoming.length}</span></button>
-          <button className="friend-filter-row"><ShieldBan size={15} /> Blocked <span>0</span></button>
-          <div className="grow-circle-card">
-            <h4>Grow your circle</h4>
-            <p>Connect with more users across the network.</p>
-            <button className="ghost-btn" onClick={() => navigate("/profile")}>Find People</button>
+      <section className="friends-panel glass-panel friends-search-box">
+        <div className="join-by-code">
+          <input value={search} placeholder="Search username" onChange={(e) => setSearch(e.target.value)} />
+          <button className="ghost-btn" onClick={onSend} disabled={busy}><Search size={14} /> Add Friend</button>
+        </div>
+
+        <div className="friends-config-row">
+          <select value={boardSize} onChange={(e) => setBoardSize(e.target.value)}>
+            {config.boardSizes.map((b) => <option key={b.id} value={b.id}>{b.id}</option>)}
+          </select>
+          <select value={theme} onChange={(e) => setTheme(e.target.value)}>
+            {config.themes.map((t) => <option key={t.id} value={t.id}>{t.name}</option>)}
+          </select>
+        </div>
+
+        {info && <div className="error-pill">{info}</div>}
+      </section>
+
+      {tab === "friends" && (
+        <section className="friends-panel glass-panel">
+          <h3>Accepted Friends</h3>
+          <div className="friends-list">
+            {accepted.map((r) => {
+              const id = otherUser(r);
+              const p = profiles.get(id);
+              return (
+                <article className="friend-row-card" key={r.id}>
+                  <div>
+                    <strong>{p?.username ?? id.slice(0, 8)}</strong>
+                    <p>{getPresenceText(id)}</p>
+                  </div>
+                  <button className="primary-btn" onClick={() => void onInvite(id)} disabled={busy}><Send size={14} /> Invite</button>
+                </article>
+              );
+            })}
+            {!accepted.length && <p className="muted-line">No friends yet.</p>}
           </div>
-        </aside>
+        </section>
+      )}
 
-        <section className="friends-panel glass-panel noir-friends-main">
-          <div className="friends-main-head">
-            <h3>{tab === "friends" ? "Online Friends" : "Friend Requests"} <span className="dot-online" /></h3>
-            <div className="friends-config-row">
-              <select value={boardSize} onChange={(e) => setBoardSize(e.target.value)}>
-                {config.boardSizes.map((b) => <option key={b.id} value={b.id}>{b.id}</option>)}
-              </select>
-              <select value={theme} onChange={(e) => setTheme(e.target.value)}>
-                {config.themes.map((t) => <option key={t.id} value={t.id}>{t.name}</option>)}
-              </select>
-            </div>
-          </div>
-
-          {info && <div className="error-pill">{info}</div>}
-
-          {tab === "friends" && (
-            <div className="noir-friend-cards">
-              {accepted.map((r) => {
-                const id = otherUser(r);
-                const p = profiles.get(id);
+      {tab === "requests" && (
+        <section className="friends-panel glass-panel friends-req-grid">
+          <div>
+            <h3>Incoming</h3>
+            <div className="friends-list">
+              {incoming.map((r) => {
+                const p = profiles.get(r.requester_id);
                 return (
-                  <article className="noir-friend-card" key={r.id}>
-                    <div className="friend-row-main">
-                      <div className={`friend-avatar-ring ${onlineIds.has(id) ? "online" : ""}`}>
-                        {p?.avatar_url ? <img src={p.avatar_url} className="avatar-image" alt={p.username} /> : <span>{(p?.username ?? "P")[0]}</span>}
-                      </div>
-                      <div>
-                        <strong>{p?.username ?? id.slice(0, 8)}</strong>
-                        <p>{getPresenceText(id)}</p>
-                      </div>
+                  <article className="friend-row-card" key={r.id}>
+                    <div>
+                      <strong>{p?.username ?? r.requester_id.slice(0, 8)}</strong>
+                      <p>pending</p>
                     </div>
-                    <div className="friend-row-actions">
-                      <button className="ghost-btn" onClick={() => void onInvite(id)} disabled={busy}><Send size={13} /> Invite</button>
-                      <button className="icon-square-btn"><MessageCircle size={13} /></button>
-                      <button className="icon-square-btn"><MoreVertical size={13} /></button>
+                    <div className="inline-btns">
+                      <button className="ghost-btn" onClick={() => void respondFriendRequest(r.id, "accept").then(load)}><Check size={14} /></button>
+                      <button className="ghost-btn" onClick={() => void respondFriendRequest(r.id, "reject").then(load)}><X size={14} /></button>
+                      <button className="ghost-btn" onClick={() => void respondFriendRequest(r.id, "block").then(load)}><ShieldBan size={14} /></button>
                     </div>
                   </article>
                 );
               })}
-              {!accepted.length && <p className="muted-line">No friends yet.</p>}
+              {!incoming.length && <p className="muted-line">No incoming requests.</p>}
             </div>
-          )}
+          </div>
 
-          {tab === "requests" && (
-            <div className="friends-req-grid">
-              <div>
-                <h3>Incoming</h3>
-                <div className="friends-list">
-                  {incoming.map((r) => {
-                    const p = profiles.get(r.requester_id);
-                    return (
-                      <article className="friend-row-card" key={r.id}>
-                        <div>
-                          <strong>{p?.username ?? r.requester_id.slice(0, 8)}</strong>
-                          <p>pending</p>
-                        </div>
-                        <div className="inline-btns">
-                          <button className="ghost-btn" onClick={() => void respondFriendRequest(r.id, "accept").then(load)}><Check size={14} /></button>
-                          <button className="ghost-btn" onClick={() => void respondFriendRequest(r.id, "reject").then(load)}><X size={14} /></button>
-                          <button className="ghost-btn" onClick={() => void respondFriendRequest(r.id, "block").then(load)}><ShieldBan size={14} /></button>
-                        </div>
-                      </article>
-                    );
-                  })}
-                  {!incoming.length && <p className="muted-line">No incoming requests.</p>}
-                </div>
-              </div>
-
-              <div>
-                <h3>Outgoing</h3>
-                <div className="friends-list">
-                  {outgoing.map((r) => {
-                    const p = profiles.get(r.addressee_id);
-                    return (
-                      <article className="friend-row-card" key={r.id}>
-                        <div>
-                          <strong>{p?.username ?? r.addressee_id.slice(0, 8)}</strong>
-                          <p><Clock3 size={12} /> pending</p>
-                        </div>
-                        <button className="ghost-btn" onClick={() => void cancelFriendRequest(r.id).then(load)}>Cancel</button>
-                      </article>
-                    );
-                  })}
-                  {!outgoing.length && <p className="muted-line">No outgoing requests.</p>}
-                </div>
-              </div>
+          <div>
+            <h3>Outgoing</h3>
+            <div className="friends-list">
+              {outgoing.map((r) => {
+                const p = profiles.get(r.addressee_id);
+                return (
+                  <article className="friend-row-card" key={r.id}>
+                    <div>
+                      <strong>{p?.username ?? r.addressee_id.slice(0, 8)}</strong>
+                      <p><Clock3 size={12} /> pending</p>
+                    </div>
+                    <button className="ghost-btn" onClick={() => void cancelFriendRequest(r.id).then(load)}>Cancel</button>
+                  </article>
+                );
+              })}
+              {!outgoing.length && <p className="muted-line">No outgoing requests.</p>}
             </div>
-          )}
+          </div>
         </section>
-      </section>
+      )}
     </ScreenShell>
   );
 }

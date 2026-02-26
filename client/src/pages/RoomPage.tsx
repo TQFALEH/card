@@ -432,103 +432,112 @@ export default function RoomPage() {
         )}
 
         {room.status === "playing" && roomState && (
-          <section className="arena-screen noir-arena">
-            <aside className="arena-left-rail glass-panel">
-              <button className="leftnav-icon active"><Grid2X2 size={17} /></button>
-              <button className="leftnav-icon" onClick={() => navigate("/")}><Menu size={17} /></button>
-              <button className="leftnav-icon" onClick={() => navigate("/friends")}><UserRound size={17} /></button>
-              <button className="leftnav-icon"><Cog size={17} /></button>
-            </aside>
+          <section className="arena-screen">
+            <header className="match-hud-frame">
+              <div className="match-hud-main">
+                <article className={`match-player-card ${roomState.state_json.current_player === myPlayer?.user_id ? "active" : ""}`}>
+                  <div className="match-player-meta">
+                    <span className="match-player-avatar">
+                      {myPlayer?.profile?.avatar_url ? <img src={myPlayer.profile.avatar_url} className="avatar-image" alt={myPlayer.profile.username} /> : <UserRound size={13} />}
+                    </span>
+                    <span>{myPlayer?.profile?.username ?? "PLAYER 1"}</span>
+                  </div>
+                  <strong>{scores[myPlayer?.user_id ?? ""] ?? 0}</strong>
+                </article>
 
-            <section className="arena-center-panel">
-              <header className="arena-top-strip glass-panel">
-                <div>
-                  <p>NOIR EDITION</p>
-                  <h3>LEVEL 24 · EXECUTIVE MATCH</h3>
+                <div className="match-hud-center">
+                  <div className="match-hud-titleblock">
+                    <Cog size={14} />
+                    <span>MEMORY MATCH</span>
+                  </div>
+                  <div className="turn-pill">{roomState.state_json.current_player === user?.id ? "CURRENT TURN: YOU" : "CURRENT TURN: OPPONENT"}</div>
                 </div>
-                <div className="strip-metrics">
-                  <span><small>SCORE</small><strong>{(scores[myPlayer?.user_id ?? ""] ?? 0) * 1000}</strong></span>
-                  <span><small>TIMER</small><strong>{formatDuration(elapsedMs)}</strong></span>
-                  <span><small>MOVES</small><strong>{roomState.state_json.moves}/{roomState.state_json.total_pairs * 2}</strong></span>
-                </div>
-                <div className="strip-player">{myPlayer?.profile?.username ?? "PLAYER"} <small>{roomState.state_json.current_player === user?.id ? "YOUR TURN" : "OPP TURN"}</small></div>
-              </header>
 
-              <section className="arena-board-stage">
-                <GameBoard state={roomState.state_json} onCardClick={onCardClick} />
-              </section>
+                <article className={`match-player-card ${roomState.state_json.current_player === opponent?.user_id ? "active" : ""}`}>
+                  <div className="match-player-meta">
+                    <span className="match-player-avatar">
+                      {opponent?.profile?.avatar_url ? <img src={opponent.profile.avatar_url} className="avatar-image" alt={opponent.profile.username} /> : <UserRound size={13} />}
+                    </span>
+                    <span>{opponent?.profile?.username ?? "PLAYER 2"}</span>
+                  </div>
+                  <strong>{scores[opponent?.user_id ?? ""] ?? 0}</strong>
+                </article>
+              </div>
+            </header>
 
-              <footer className="arena-footer-bar">
-                <div className="arena-metric"><span>GRID</span><strong>{room.board_size} MATRIX</strong></div>
-                <div className="arena-metric"><span>DIFFICULTY</span><strong>HARDBOILED</strong></div>
-                <div className="arena-metric"><span>MODE</span><strong>CLASSIC MEMORY</strong></div>
-              </footer>
+            <section className="arena-board-stage">
+              <GameBoard state={roomState.state_json} onCardClick={onCardClick} />
             </section>
 
-            <aside className="arena-right-panel glass-panel">
-              <h4>QUICK STATS</h4>
-              <div className="quick-stats-grid">
-                <article><span>ACCURACY</span><strong>{accuracy}%</strong></article>
-                <article><span>COMBO</span><strong>x{Math.max(1, roomState.state_json.matched_pairs)}</strong></article>
-                <article><span>BEST TIME</span><strong>01:12</strong></article>
-                <article><span>MATCHES</span><strong>{roomState.state_json.matched_pairs}/{roomState.state_json.total_pairs}</strong></article>
-              </div>
-              <h4>ACTIVE FRIENDS</h4>
-              <div className="active-friends-list">
-                {players.map((p) => (
-                  <div key={p.user_id} className="friend-line-mini">
-                    <span>{p.profile?.username ?? "Player"}</span>
-                    <small>{onlineIds.includes(p.user_id) ? "ONLINE" : "OFFLINE"}</small>
-                  </div>
-                ))}
-              </div>
-              <button className="ghost-btn" onClick={() => navigate("/friends")}>VIEW ALL FRIENDS</button>
-            </aside>
+            <footer className="arena-footer-bar">
+              <div className="arena-metric"><span>SESSION TIME</span><strong>{formatDuration(elapsedMs)}</strong></div>
+              <div className="arena-metric"><span>TOTAL MOVES</span><strong><Grid2X2 size={14} /> {roomState.state_json.moves}</strong></div>
+              <button className="footer-control-btn"><Cog size={16} /> Settings</button>
+              <button className="footer-main-btn" onClick={() => navigate("/")}><RotateCcw size={16} /> RESTART GAME</button>
+            </footer>
           </section>
         )}
 
         {room.status === "ended" && roomState && (
-          <section className="victory-screen noir-victory-screen">
+          <section className="victory-screen">
             <header className="victory-topbar">
-              <div className="victory-brand"><span className="victory-brand-icon"><Zap size={15} /></span><strong>NOIR EDITION</strong></div>
+              <div className="victory-brand">
+                <span className="victory-brand-icon"><Zap size={15} /></span>
+                <strong>Memory Match</strong>
+              </div>
               <div className="victory-top-actions">
                 <button className="icon-square-btn"><Cog size={17} /></button>
-                <button className="icon-square-btn" onClick={() => navigate("/")}><Menu size={17} /></button>
+                <div className="rank-pill">
+                  <span>RANK</span>
+                  <strong>Online Duel</strong>
+                </div>
+                <button className="rank-avatar" onClick={() => navigate("/profile")}>
+                  {profile?.avatar_url ? <img src={profile.avatar_url} alt={profile.username ?? "Player"} className="avatar-image" /> : <UserRound size={14} />}
+                </button>
               </div>
             </header>
 
             <section className="victory-hero">
-              <h2>MISSION</h2>
-              <h3>ACCOMPLISHED</h3>
+              <p>MATCH COMPLETED</p>
+              <h2>RESULTS</h2>
             </section>
 
-            <article className="winner-panel">
-              <div className="winner-avatar-ring">
-                <div className="winner-avatar-core">
-                  {winner?.profile?.avatar_url ? <img src={winner.profile.avatar_url} className="avatar-image" alt={winner.profile.username} /> : (winner?.profile?.username?.[0] ?? "P").toUpperCase()}
+            <section className="victory-main-grid">
+              <article className="winner-panel glass-panel">
+                <div className="winner-avatar-ring">
+                  <div className="winner-avatar-core">
+                    {winner?.profile?.avatar_url ? <img src={winner.profile.avatar_url} className="avatar-image" alt={winner.profile.username} /> : (winner?.profile?.username?.[0] ?? "P").toUpperCase()}
+                  </div>
+                  <span className="winner-badge">MVP</span>
                 </div>
-                <span className="winner-badge">MVP CHAMPION</span>
+                <h3>{winner?.profile?.username ?? "Winner"}</h3>
+                <p>GLOBAL LEADERBOARD #{1200 + Math.max(1, roomState.state_json.moves)}</p>
+                <div className="xp-panel">
+                  <div className="xp-row"><span>XP EARNED</span><strong>+{Math.max(850, accuracy * 22)} XP</strong></div>
+                  <div className="xp-bar"><span style={{ width: `${Math.min(96, accuracy)}%` }} /></div>
+                  <small>LEVEL 42 · 450 XP TO LEVEL 43</small>
+                </div>
+              </article>
+
+              <div className="victory-right">
+                <div className="victory-stats-grid">
+                  <article className="victory-stat-card glass-panel"><p><Zap size={13} /> MOVES</p><strong>{roomState.state_json.moves}</strong><small>BEST: {Math.max(8, roomState.state_json.moves - 3)}</small></article>
+                  <article className="victory-stat-card glass-panel"><p><Timer size={13} /> TIME</p><strong>{formatDuration(elapsedMs)}</strong><small>AVG: 01:55</small></article>
+                  <article className="victory-stat-card glass-panel"><p><Cog size={13} /> ACCURACY</p><strong>{accuracy}%</strong><small>WORLD AVG: 78%</small></article>
+                </div>
+
+                <div className="score-row">
+                  {players.map((p) => (
+                    <div key={p.user_id} className="score-chip"><span>{p.profile?.username ?? "Player"}</span><strong>{scores[p.user_id] ?? 0}</strong></div>
+                  ))}
+                </div>
+
+                <div className="victory-ctas">
+                  <button className="victory-play-btn" onClick={onRematchSameRoom}><RotateCcw size={17} /> REMATCH SAME ROOM</button>
+                  <button className="victory-menu-btn" onClick={() => navigate("/")}><Menu size={17} /> BACK TO HOME</button>
+                </div>
               </div>
-              <h3>{winner?.profile?.username ?? "Winner"}</h3>
-              <p>LEVEL 24 MASTER ARCHITECT</p>
-            </article>
-
-            <div className="victory-stats-grid">
-              <article className="victory-stat-card glass-panel"><p><Zap size={13} /> MOVES</p><strong>{roomState.state_json.moves}</strong></article>
-              <article className="victory-stat-card glass-panel"><p><Timer size={13} /> DURATION</p><strong>{formatDuration(elapsedMs)}</strong></article>
-              <article className="victory-stat-card glass-panel"><p><Cog size={13} /> ACCURACY</p><strong>{accuracy}%</strong></article>
-            </div>
-
-            <div className="score-row">
-              {players.map((p) => (
-                <div key={p.user_id} className="score-chip"><span>{p.profile?.username ?? "Player"}</span><strong>{scores[p.user_id] ?? 0}</strong></div>
-              ))}
-            </div>
-
-            <div className="victory-ctas">
-              <button className="victory-play-btn" onClick={onRematchSameRoom}><RotateCcw size={17} /> PLAY AGAIN</button>
-              <button className="victory-menu-btn" onClick={() => navigate("/")}><Menu size={17} /> BACK TO MENU</button>
-            </div>
+            </section>
           </section>
         )}
       </div>

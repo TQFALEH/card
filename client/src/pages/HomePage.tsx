@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { BarChart3, Bell, Coins, Cog, Gamepad2, Home, Play, Rocket, Search, Server, User, UserRound, Users, UsersRound, X } from "lucide-react";
+import { BarChart3, Coins, Cog, Play, Rocket, Server, User, UserRound, Users, UsersRound, X } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import ScreenShell from "../components/ScreenShell";
 import { useAuth } from "../contexts/AuthContext";
@@ -167,69 +167,57 @@ export default function HomePage() {
   }
 
   return (
-    <ScreenShell screenKey="home" className="noir-home">
-      <aside className="noir-home-leftnav glass-panel">
-        <button className="leftnav-icon active"><Home size={18} /></button>
-        <button className="leftnav-icon"><Gamepad2 size={18} /></button>
-        <button className="leftnav-icon"><BarChart3 size={18} /></button>
-        <button className="leftnav-icon" onClick={() => navigate("/friends")}><Users size={18} /></button>
-      </aside>
-
-      <section className="noir-home-main">
-        <header className="noir-home-topbar glass-panel">
-          <strong>Good evening, {profile?.username ?? "Agent"}</strong>
-          <div className="noir-home-top-actions">
-            <label className="noir-search-pill">
-              <Search size={15} />
-              <input placeholder="Search games..." />
-            </label>
-            <button className="icon-square-btn"><Bell size={14} /></button>
-            <button className="rank-avatar" onClick={() => navigate("/profile")}>
-              {profile?.avatar_url ? <img src={profile.avatar_url} alt={profile.username} className="avatar-image" /> : <UserRound size={14} />}
-            </button>
+    <ScreenShell screenKey="home" className="home-screen">
+      <header className="home-topbar">
+        <div className="status-chip">
+          <Server size={14} />
+          <div>
+            <p>SYSTEM STATUS</p>
+            <strong>ONLINE // V2.0.4</strong>
           </div>
-        </header>
-
-        <section className="noir-home-hero glass-panel">
-          <p className="hero-chip">POPULAR CHOICE</p>
-          <h1>Memory Match: Celestial Edition</h1>
-          <p>Unlock ranked multiplayer, realtime duels, and cinematic memory battles.</p>
-          <div className="hero-actions">
-            <button className="play-now-btn" onClick={() => setShowSetup(true)}><Play size={18} fill="currentColor" /> Play Now</button>
-            <button className="secondary-neon-btn" onClick={() => navigate("/history")}><BarChart3 size={16} /> View Details</button>
-          </div>
-        </section>
-
-        <section className="noir-home-row">
-          <header>
-            <h3>New Games</h3>
-            <button className="ghost-btn" onClick={() => navigate("/friends")}>Browse all</button>
-          </header>
-          <div className="noir-cards-grid">
-            <article className="noir-game-card"><div /><h4>Cyber Quest 2077</h4><p>Action · RPG</p></article>
-            <article className="noir-game-card"><div /><h4>Uncharted 4</h4><p>Adventure · Story</p></article>
-            <article className="noir-game-card"><div /><h4>Nebula Logic</h4><p>Puzzle · Strategy</p></article>
-          </div>
-        </section>
-      </section>
-
-      <aside className="noir-home-right glass-panel">
-        <h2>Activity</h2>
-        <article className="activity-hours">
-          <p>TOTAL HOURS PLAYED</p>
-          <strong>12,340h</strong>
-          <small>+12% this month</small>
-        </article>
-        <div className="activity-friends">
-          <h4>Friends</h4>
-          <div className="friend-mini"><span>Leo_Gamer</span><small>Playing</small></div>
-          <div className="friend-mini"><span>SaraMatches</span><small>Online</small></div>
-          <div className="friend-mini"><span>GhostRider</span><small>Offline</small></div>
-          <button className="secondary-neon-btn" onClick={() => navigate("/friends")}><Users size={14} /> VIEW ALL FRIENDS</button>
         </div>
-        <div className="home-system-status"><Server size={13} /> ONLINE // SUPABASE REALTIME</div>
-        <div className="currency-pill"><Coins size={14} /> 12,450</div>
-      </aside>
+
+        <div className="home-top-actions">
+          <div className="currency-pill"><Coins size={14} /> 12,450</div>
+          <div className="currency-pill">480</div>
+          <button className="rank-avatar" onClick={() => navigate("/profile")}>
+            {profile?.avatar_url ? <img src={profile.avatar_url} alt={profile.username} className="avatar-image" /> : <UserRound size={14} />}
+          </button>
+        </div>
+      </header>
+
+      <div className="home-center">
+        <div className="home-side-left">
+          <article className="home-stat-card"><span>GLOBAL RANK</span><strong>#1,242</strong></article>
+          <article className="home-stat-card"><span>TOTAL WINS</span><strong>154</strong></article>
+        </div>
+
+        <section className="home-hero">
+          <p className="home-hero-tag">ULTRA HD EXPERIENCE</p>
+          <h1 className="home-title">
+            <span>NEON</span>
+            <em className="home-title-neon">MEMORY</em>
+          </h1>
+          <button className="play-now-btn" onClick={() => setShowSetup(true)}>
+            <Play size={18} fill="currentColor" />
+            PLAY NOW
+          </button>
+          <div className="home-secondary-actions">
+            <button className="secondary-neon-btn" onClick={() => navigate("/history")}><BarChart3 size={16} />HISTORY</button>
+            <button className="secondary-neon-btn" onClick={() => navigate("/friends")}><Cog size={16} />FRIENDS</button>
+          </div>
+        </section>
+
+        <div className="home-side-right">
+          <article className="home-stat-card"><span>HIGH SCORE</span><strong>98,420</strong></article>
+          <article className="home-stat-card"><span>CURRENT EVENT</span><strong>NEON SUMMER '24</strong></article>
+        </div>
+      </div>
+
+      <footer className="home-footer">
+        <p>PATCH NOTES</p>
+        <p>SERVER: SUPABASE WS</p>
+      </footer>
     </ScreenShell>
   );
 }

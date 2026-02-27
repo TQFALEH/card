@@ -1,7 +1,7 @@
 :root {
-  color-scheme: light;
-  --bg0: #031a24;
-  --bg1: #062433;
+  color-scheme: dark;
+  --bg0: #3b95bb;
+  --bg1: #26617e;
   --panel: rgba(4, 22, 31, 0.72);
   --panel-border: rgba(0, 199, 255, 0.28);
   --line-soft: rgba(20, 103, 133, 0.28);
